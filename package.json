@@ -1,0 +1,13 @@
+{
+  "type": "module",
+  "devDependencies": {
+    "tailwindcss": "^3.4.17"
+  },
+  "scripts": {
+    "dev": "gulp dev"
+  },
+  "dependencies": {
+    "execa": "^9.5.2",
+    "gulp": "^5.0.0"
+  }
+}
