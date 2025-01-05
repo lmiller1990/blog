@@ -1,0 +1,51 @@
+{% extends "root.html" %}
+
+{% block content %}
+
+<p>
+Hi! I'm Lachlan, a full stack software developer, passionate about open source, test driven development, and mentoring with over ten years of experience. 
+I've worked with a wide range of technologies in a variety of industries.
+</p>
+<p>
+  You may know me for my involvement in the open source community, mainly for my work in the JavaScript ecosystem on projects such as
+  <a class="underline" href="https://github.com/vuejs/">Vue.js</a> and 
+  <a class="underline" href="https://github.com/cypress-io/cypress">Cypress</a>.
+</p>
+
+<p>I recently released my first book,  <a class="underline" href="/design-patterns-for-vuejs">Design Patterns for Vue.js</a>.
+
+Get the first few chapters for free <a class="underline" href="/design-patterns-for-vuejs">here</a>.</p><p>I am also a content creator and instructor. 
+
+I also have a 
+<a class="underline" href="https://www.youtube.com/channel/UCydNBt-h2Cox_Ub_GzspneQ?view_as=subscriber">YouTube channel</a>,
+and I've published three courses on <a class="underline" href="https://www.udemy.com/user/lachlan-miller-4/">Udemy</a>.
+</p>
+
+{% endblock %}
+
+<!--
+<script>function postEmail(payload) {
+  return window.fetch('https://vuejs-course.com/emails', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(payload)
+  })
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  const $form = document.getElementById('subscribe')
+  $form.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const $email = document.getElementById('email')
+    const $button = document.getElementById('email-submit')
+    $button.setAttribute('disabled', 'disabled')
+    await postEmail({ email: $email.value, referrer: 'lachlan-miller.me' })
+    $button.removeAttribute('disabled')
+    $button.textContent = 'Thanks!'
+  })
+})</script><p><em>Like my content?
+Sign up to get occasional emails
+about new blog posts and other content. </em></p><p></p><form id="subscribe"><label for="email">Email</label><input id="email" name="email"><button id="email-submit" type="submit">Submit</button></form><p></p>Unsubscribe anytime <a class="underline" href="https://vuejs-course.com/emails/unsubscribe">here</a>.<hr></div>
+-->

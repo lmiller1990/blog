@@ -1,10 +1,10 @@
-from typing import Union
 import os
 
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
-from fastapi import FastAPI, Request, Response
+from fastapi import FastAPI, Request
 from fastapi.staticfiles import StaticFiles
+from build import all_articles
 
 
 app = FastAPI()
@@ -19,8 +19,16 @@ def read_html(slug: str) -> str:
 
 
 @app.get("/")
-def read_root():
-    return {"Hello": "World"}
+def read_root(request: Request):
+    return templates.TemplateResponse(request=request, name="index.html")
+
+
+@app.get("/articles")
+def articles(request: Request):
+    all = all_articles()
+    return templates.TemplateResponse(
+        request=request, name="articles_index.html", context={"articles": all}
+    )
 
 
 @app.get("/articles/{slug}", response_class=HTMLResponse)

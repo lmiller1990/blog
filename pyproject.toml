@@ -10,6 +10,7 @@ python = "^3.12"
 markdown = "^3.7"
 fastapi = {extras = ["standard"], version = "^0.115.6"}
 jinja2 = "^3.1.5"
+djhtml = "^3.0.7"
 
 
 [build-system]

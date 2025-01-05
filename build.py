@@ -73,10 +73,14 @@ def build_articles(article_path: str, articles: list[str]) -> list[Article]:
     ]
 
 
-def main():
+def all_articles() -> list[Article]:
     artpath = os.path.join(os.getcwd(), "articles")
     slugs = get_all_articles(artpath)
-    articles = build_articles(artpath, slugs)
+    return build_articles(artpath, slugs)
+
+
+def main():
+    articles = all_articles()
 
     if Path(os.path.join(os.getcwd(), "static")).exists():
         shutil.rmtree("static/articles")
