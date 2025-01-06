@@ -47,6 +47,10 @@ def musings(request: Request):
 def books(request: Request):
     return templates.TemplateResponse(request=request, name="books.html")
 
+@app.get("/contact")
+def contact(request: Request):
+    return templates.TemplateResponse(request=request, name="contact.html")
+
 
 @app.get("/articles/{slug}", response_class=HTMLResponse)
 def read_article(request: Request, slug: str):

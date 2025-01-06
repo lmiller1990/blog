@@ -91,7 +91,7 @@ def build_static_content(content_dir: str):
 
     os.makedirs(os.path.join("static", content_dir), exist_ok=True)
     for article in articles:
-        html = markdown.markdown(article["markdown"], extensions=["fenced_code"])
+        html = markdown.markdown(article["markdown"], extensions=["fenced_code", "tables"])
         with open(
             os.path.join("static", content_dir, f"{article['slug']}.html"), "w"
         ) as f:

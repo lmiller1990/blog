@@ -1,32 +1,63 @@
 <html>
-<head>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title></title>
-       <link href="/static/output.css" rel="stylesheet">
+    <link href="/static/output.css" rel="stylesheet" />
     <style>
- pre {
-  max-width: 100vw; /* Sets the maximum width to 100% of the viewport width */
-  width: 100%; /* Ensures the block tries to fill the available space */
-  overflow-x: auto; /* Allows horizontal scrolling if content overflows */
-  box-sizing: border-box; /* Includes padding and border in the element's total width and height */
-}
-
+      pre {
+        max-width: 100vw; /* Sets the maximum width to 100% of the viewport width */
+        width: 100%; /* Ensures the block tries to fill the available space */
+        overflow-x: auto; /* Allows horizontal scrolling if content overflows */
+        box-sizing: border-box; /* Includes padding and border in the element's total width and height */
+      }
     </style>
-</head>
-<body class="font-sans p-4">
-  <div class="flex justify-between items-center">
-    <img class="rounded-full h-24" src="https://avatars2.githubusercontent.com/u/19196536?s=460&u=8fc5c9d3a010264b51d56049df87a6d229c9a64d&v=4">
-    <div class="flex flex-col items-end">
-      <h1 class="text-3xl">Lachlan Miller</h1>
-      <a class="uppercase text-gray-500 text-sm mt-1" href="/articles">Articles</a>
-      <a class="uppercase text-gray-500 text-sm mt-1" href="/books">Books & Courses</a>
-      <a class="uppercase text-gray-500 text-sm mt-1" href="/musings">Musings</a>
-      <a class="uppercase text-gray-500 text-sm mt-1" href="/contact">Contact</a>
+  </head>
+  <body class="font-sans p-4">
+    <div class="flex justify-between items-center">
+      <div class="md:mx-24">
+        <div class="flex">
+          <a href="/">
+            <img
+              class="rounded-full h-24"
+              src="https://avatars2.githubusercontent.com/u/19196536?s=460&u=8fc5c9d3a010264b51d56049df87a6d229c9a64d&v=4"
+            />
+          </a>
+          <div class="flex flex-col mt-8 ml-8 hidden md:block">
+            <h1 class="text-3xl">Lachlan Miller</h1>
+            <div class="flex">
+              <a class="uppercase text-gray-500 text-sm mt-1 mr-2" href="/articles"
+                >Articles</a
+              >
+              <a class="uppercase text-gray-500 text-sm mt-1 mr-2" href="/books"
+                >Books & Courses</a
+              >
+              <a class="uppercase text-gray-500 text-sm mt-1 mr-2" href="/musings"
+                >Musings</a
+              >
+              <a class="uppercase text-gray-500 text-sm mt-1 mr-2" href="/contact"
+                >Contact</a
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex flex-col items-end md:hidden">
+        <h1 class="text-3xl">Lachlan Miller</h1>
+        <a class="uppercase text-gray-500 text-sm mt-1" href="/articles"
+          >Articles</a
+        >
+        <a class="uppercase text-gray-500 text-sm mt-1" href="/books"
+          >Books & Courses</a
+        >
+        <a class="uppercase text-gray-500 text-sm mt-1" href="/musings"
+          >Musings</a
+        >
+        <a class="uppercase text-gray-500 text-sm mt-1" href="/contact"
+          >Contact</a
+        >
+      </div>
     </div>
-  </div>
-  <div class="p-6">
-     {% block content %}
-     {% endblock %}
-  </div>
-</body>
+    <div class="p-6 md:mx-32">{% block content %} {% endblock %}</div>
+  </body>
 </html>
