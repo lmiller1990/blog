@@ -4,7 +4,7 @@
   {% for article in articles %}
     <div>
       <div class="flex flex-col">
-        <a href="/articles/{{ article.slug }}" class="underline"><h2>{{ article.title }}</h2></a>
+        <a href="/{{ content_dir }}/{{ article.slug }}" class="underline"><h2>{{ article.title }}</h2></a>
         <p class="text-gray-500">{{ article.published.strftime('%Y-%m-%d') }}</p>
       </div>
       <p>{{ article.description }}</p>

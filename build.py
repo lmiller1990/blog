@@ -73,25 +73,34 @@ def build_articles(article_path: str, articles: list[str]) -> list[Article]:
     ]
 
 
-def all_articles() -> list[Article]:
-    artpath = os.path.join(os.getcwd(), "articles")
+def all_content(content_dir: str) -> list[Article]:
+    artpath = os.path.join(os.getcwd(), content_dir)
     slugs = get_all_articles(artpath)
-    return build_articles(artpath, slugs)
+    built = build_articles(artpath, slugs)
+    return sorted(built, key=lambda x: x["published"], reverse=True)
 
 
-def main():
-    articles = all_articles()
+def build_static_content(content_dir: str):
+    articles = all_content(content_dir)
 
     if Path(os.path.join(os.getcwd(), "static")).exists():
-        shutil.rmtree("static/articles")
+        try:
+            shutil.rmtree(f"static/{content_dir}")
+        except:
+            pass
 
-    os.makedirs(os.path.join("static", "articles"), exist_ok=True)
+    os.makedirs(os.path.join("static", content_dir), exist_ok=True)
     for article in articles:
         html = markdown.markdown(article["markdown"], extensions=["fenced_code"])
         with open(
-            os.path.join("static", "articles", f"{article['slug']}.html"), "w"
+            os.path.join("static", content_dir, f"{article['slug']}.html"), "w"
         ) as f:
             f.write(html)
+
+
+def main():
+    for content_type in ["articles", "musings"]:
+        build_static_content(content_type)
 
 
 if __name__ == "__main__":

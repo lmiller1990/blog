@@ -1,0 +1,283 @@
+<h1>Decoding Variable Length Quantity (VLQ) for Source Maps</h1>
+<p>This is the first article in a series on source maps. We will be building an app to show the mapping between some TypeScript code and the compiled JavaScript using source maps. In order to understand exactly how everything works, instead of using libraries like <a href="https://www.npmjs.com/package/source-map"><code>source-map</code></a> or <a href="https://www.npmjs.com/package/vlq"><code>vlq</code></a>, we will write our own decoder and parser from scratch!</p>
+<p>You can watch a video version of this post on my <a href="https://youtube.com/c/LachlanMiller">Youtube channel</a>.</p>
+<p>Here are some useful resources I used for this article:</p>
+<ul>
+<li><a href="https://sokra.github.io/source-map-visualization/">Source Map Visualizer</a> by Tobias Koppers of Webpack fame</li>
+<li><a href="https://evanw.github.io/source-map-visualization/">Source Map Visualizer</a> by Evan Wallace of Figma fame</li>
+<li><a href="https://github.com/Rich-Harris/vlq">VLQ Source Code</a> by Rich Harris of Rollup fame</li>
+<li><a href="https://docs.google.com/document/d/1U1RGAehQwRypUTovF1KRlpiOFze0b-_2gc6fAH0KY0k/edit#heading=h.djovrt4kdvga">The actual "standard" documentation</a> which is actually just a Google doc - turns out there is no official "spec" as such</li>
+<li><a href="https://en.wikipedia.org/wiki/Base64#Base64_table">Wikipedia Base64 article</a></li>
+<li><a href="https://en.wikipedia.org/wiki/Variable-length_quantity">Wikipedia VLQ article</a></li>
+</ul>
+<h2>What is a Source Map?</h2>
+<p>Let's say we have this TypeScript code:</p>
+<pre><code class="language-ts">const greet = (name: string) =&gt; {
+  return `Hello ${name}`
+}
+</code></pre>
+<p>If you compile it and ask for a source map with <code>yarn tsc greet.ts --sourceMap</code>, you get both the compiler JavaScript (<code>greet.js</code>):</p>
+<pre><code class="language-js">var greet = function (name) {
+    return &quot;Hello &quot; + name;
+};
+//# sourceMappingURL=greet.js.map
+</code></pre>
+<p>...and the source map (<code>greet.js.map</code>):</p>
+<pre><code class="language-js">{
+  &quot;version&quot;: 3,
+  &quot;file&quot;: &quot;greet.js&quot;,
+  &quot;sourceRoot&quot;: &quot;&quot;,
+  &quot;sources&quot;: [
+    &quot;greet.ts&quot;
+  ],
+  &quot;names&quot;: [],
+  &quot;mappings&quot;: &quot;AAAA,IAAM,KAAK,GAAG,UAAC,IAAY;IACzB,OAAO,WAAS,IAAM,CAAA;AACxB,CAAC,CAAA&quot;
+}
+</code></pre>
+<p>The main thing we are interested in is <code>mappings</code>: </p>
+<pre><code>&quot;AAAA,IAAM,KAAK,GAAG,UAAC,IAAY;IACzB,OAAO,WAAS,IAAM,CAAA;AACxB,CAAC,CAAA&quot;
+</code></pre>
+<p>This incredibly compact jumble of letters tells us that <code>var</code> in <code>greet.js</code> corresponds to <code>const</code> in <code>greet.ts</code>, as well as how the rest of it maps up... if we can decode it. </p>
+<h2>Variable Length Quantity</h2>
+<p>These letters are variable length quantity - a very concise way of encoding large numbers. To hint at where this is all leading, if you decode <code>AAAA</code>, you get an array of numbers: <code>[0, 0, 0, 0]</code>. <code>IAAM</code> gives us <code>[4, 0, 0, 6]</code>. The next article will go in depth on what each of these numbers means, but basically they map a row and column in the compiled JavaScript to the original TypeScript:</p>
+<p><img alt="source-map-diagram" src="https://raw.githubusercontent.com/lmiller1990/source-map-visualizer/main/source-maps-diagram.png" /></p>
+<p>This brings us to the goal of this post: decoding the VLQs to arrays of numbers.</p>
+<h2>Segments, Fields and Base 64</h2>
+<p>The <code>mappings</code> property has many segments, divided up by <code>,</code>. Each one has several fields. <code>AAAA</code> maps to <code>[0, 0, 0, 0]</code> - which has four fields. Each line is separated by a <code>;</code>. Our mappings field has two <code>;</code> - three lines total, which matches up to the compiled JavaScript. The source map always maps from the compiled code to the original code - not the other way around. This means the number of lines represented in the source map will always be the same as the number of lines in the compiled code.</p>
+<p>What we are dealing with are base 64 encoded VLQs. According to the standard:</p>
+<blockquote>
+<p>The VLQ is a Base64 value, where the most significant bit (the 6th bit) is used as the continuation bit, and the “digits” are encoded into the string least significant first, and where the least significant bit of the first digit is used as the sign bit.</p>
+</blockquote>
+<p>Decoding <code>A</code> is quite easy, since it is listed in the <a href="https://en.wikipedia.org/wiki/Base64#Base64_table">Base 64</a> table - it's 0. We can be a bit more thorough in our decoding using the above definition for a VLQ.</p>
+<p>A is 0, or in binary, <code>000000</code>. As stated above, the most significant bit (the 6th bit) is used as the continuation bit. In this case the most significant bit (the value on the far left) is 0. This means there is no continuation needed - the number fits into five bits. For larger numbers, this is not the case. We will see an example soon.</p>
+<p>It also says the least significant bit of the first digit is used as the sign bit. The least significant bit (the value on the far right) is also 0.</p>
+<h2>Encoding Negative Numbers</h2>
+<p>Let's see an example of a negative number. <code>J</code> is VLQ for -4. Looking at the <a href="https://en.wikipedia.org/wiki/Base64#Base64_table">Base 64</a> table again, we can see <code>J</code> is 9, or <code>001001</code> in binary. The most significant bit is 0 - so we know the entire number fits within 5 bits. The least significant bit is 1 - that means it's a negative number. We are left with <code>100</code>, which is 4 in decimal. The final decoded value is -4.</p>
+<h2>The Continuation Bit</h2>
+<p>The final example we need to cover is an encoded VLQ that uses a continuation bit. <code>yB</code> decodes to 25. Let's walk through it. Looking at the <a href="https://en.wikipedia.org/wiki/Base64#Base64_table">Base 64</a> table, we can see <code>y</code> is 50 in decimal, or <code>110010</code> in binary. The most significant bit is a 1 - this means the number requires more than 5 bits to encode. Truncating the leading 1, we are left with <code>10010</code>. <code>10010</code> is 19 in decimal.</p>
+<pre><code>+-----------------------+
+|          19           |
++---+---+---+---+---+---+
+| X | 1 | 0 | 0 | 1 | 0 |
++---+---+---+---+---+---+
+</code></pre>
+<p>Next is <code>B</code>, which is 1 in decimal or <code>000001</code> in binary. The most significant bit is 0, so we do not need to continue to the next segment.</p>
+<p>With this knowledge, <code>yB</code> represented in VLQ looks like this:</p>
+<pre><code>+-----------------------+-----------------------+
+| C |       19          |          1            |
++---+---+---+---+---+---+---+---+---+---+---+---+
+| 1 | 1 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 1 |
++---+---+---+---+---+---+---+---+---+---+---+---+
+</code></pre>
+<p>Finally, we need to sum the two numbers. Ignoring the initial continuation bit, we have:</p>
+<pre><code>+-------------------+-----------------------+
+|       19          |             1         | 
++---+---+---+---+---+-------+---+---+---+---+
+| 1 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 1 |
++---+---+---+---+---+---+---+---+---+---+---+
+</code></pre>
+<p>or <code>10010</code> and <code>000001</code>. It's not as simple as 18 + 1 = 19. Referring back to the standard:</p>
+<blockquote>
+<p>The VLQ is a Base64 value, where the most significant bit (the 6th bit) is used as the continuation bit, and <strong>the “digits” are encoded into the string least significant first</strong>, and where the least significant bit of the first digit is used as the sign bit. </p>
+</blockquote>
+<p>This means the second value, <code>000001</code> is actually more significant than <code>10010</code> - by five orders of magnitude (in binary), or 31 - <code>111111</code> in binary. This means for each continuation bit we encounter, the subsequent value needs to be increased by 31. </p>
+<p>This means the final calculation is 18 (<code>10010</code>) + ( 1 (<code>000001</code>) + 31 (<code>111111</code>) ) = 50.</p>
+<p>50? Didn't you say <code>yB</code> decodes to 25? Yes! We are not done yet. The last part of the standard states:</p>
+<blockquote>
+<p>The VLQ is a Base64 value, where the most significant bit (the 6th bit) is used as the continuation bit, and the “digits” are encoded into the string least significant first, and where the <strong>least significant bit of the first digit is used as the sign bit</strong>. </p>
+</blockquote>
+<p>This means the final number is not <code>50</code> - which is <code>110010</code> in binary, but <code>11001</code>. The final bit represents the sign - <code>0</code> for positive and <code>1</code> for negative. <code>11001</code> is 25, and it's +25 because the final bit is 0.</p>
+<pre><code>+--------------------------+
+|       Value       | Sign |
++---+---+---+---+---+------+
+| 1 | 1 | 0 | 0 | 1 |   0  |
++---+---+---+---+---+------+
+</code></pre>
+<p>The continuation bit is what makes VLQ and source maps complex to understand and decode at first - but with the information above, we are now in a good position to write a <code>decode</code> function!</p>
+<h2>Decoding VLQs with JavaScript</h2>
+<p>Time to write some code. As discussed, VLQ supports representing numbers larger than 31 (<code>11111</code>) using continuation bit(s). This means our solution is going to be recursive, to support arbitrarily large numbers.</p>
+<p>Since we are operating with binary representations, we will use JavaScript's built in binary operators heavily in our solution.</p>
+<p>Let's start with the same example as used above, <code>A</code>, which decodes to <code>0</code>. Ultimately we want to return an array of numbers, since we are building this decode function for use with source maps, so instead of just decoding <code>A</code> to 0, we will decode <code>AAAA</code> to <code>[0, 0, 0, 0]</code>.</p>
+<pre><code class="language-ts">function decode(str: string) {
+}
+
+console.log(
+  decode('AAAA')
+)
+</code></pre>
+<p>The first thing we need to do is separate the first character from the rest. So for <code>AAAA</code>, we want <code>A</code> and <code>AAA</code>.</p>
+<pre><code class="language-ts">function decode(str: string) {
+  const [char, ...tail] = str
+  const rest = tail.join('')
+
+  // char =&gt; 'A', rest =&gt; 'AAA'
+}
+</code></pre>
+<p>The next thing we need to do is get the <a href="https://en.wikipedia.org/wiki/Base64#Base64_table">Base 64</a> value for <code>A</code>. The easiest way to get access to a <a href="https://en.wikipedia.org/wiki/Base64#Base64_table">Base 64</a> -&gt; integer map is simply to hard-code it:</p>
+<pre><code class="language-ts">const charToInteger: Record&lt;string, number&gt; = {}
+
+'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/='
+  .split('')
+  .forEach((char, i) =&gt; {
+    charToInteger[char] = i
+  })
+
+function decode(str: string) {
+  const [char, ...tail] = str
+  const rest = tail.join('')
+  const integer = charToInteger[char]
+}
+</code></pre>
+<p>Now things get a little more interesting. We need to see if there is a continuation bit. We can do this using a bitwise <code>&amp;</code>. Performing <code>x &amp; y</code> will return a new binary value where bit is <code>1</code> if both corresponding bits in <code>x</code> and <code>y</code> are <code>1</code>. For example:</p>
+<pre><code>+---+---+---+---+---+---+
+| x | 1 | 1 | 0 | 1 | 0 |
++---+---+---+---+---+---+
+| y | 0 | 1 | 0 | 1 | 0 |
+|=======================|
+| = | 0 | 1 | 0 | 1 | 0 |
++---+---+---+---+---+---+
+</code></pre>
+<p>This would return <code>01010</code>. A neat trick is just to do <code>&amp; 32</code> to see if we have a continuation bit. Why does this work? 32 is <code>100000</code>. It will return 0 for any value where the sixth bit is not 1. In this example, <code>A</code> is <code>000000</code> &amp; <code>100000</code> returns <code>000000</code> - 0 in decimal - which of course evaluates to false in JavaScript.</p>
+<pre><code class="language-ts">function decode(str: string) {
+  const [char, ...tail] = str
+  const rest = tail.join('')
+  const integer = charToInteger[char]
+  const hasContinuationBit = integer &amp; 32
+}
+</code></pre>
+<p>If there is not continuation bit, we can just check the least significant bit to see if the value is positive or negative, then return the final value.</p>
+<pre><code class="language-ts">function decode(str: string) {
+  const [char, ...tail] = str
+  const rest = tail.join('')
+  const integer = charToInteger[char]
+  const hasContinuationBit = integer &amp; 32
+
+  if (hasContinuationBit) {
+    // handle it
+  } else {
+    const isNegative = integer &amp; 1
+    const finalValue = isNegative ? -(integer &gt;&gt;&gt; 1) : integer &gt;&gt;&gt; 1
+    return finalValue
+  }
+}
+</code></pre>
+<p>We use the bitwise <code>&amp;</code> trick again - this time to see if the final bit is 1 or 0. We then need to discard the final bit, since that only represents the sign, it's not part of the actual value, and return the result. We can do that by using a <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Unsigned_right_shift">bitwise right shift</a>, which moves everything to the right, truncating the remaining bits. For example <code>101 &gt;&gt;&gt; 1</code> would become <code>10</code> - we've removed the final bit.</p>
+<p>Success! <code>decode</code> returns <code>0</code>. We want to iterate over each character, and return an array of <code>[0, 0, 0, 0]</code>. All we need to do is call <code>decode</code> again, passing in the <code>rest</code>. We will also need to keep track of the decoded values:</p>
+<pre><code class="language-ts">function decode(str: string, decoded = []) {
+  const [char, ...tail] = str
+  const rest = tail.join('')
+  const integer = charToInteger[char]
+  const hasContinuationBit = integer &amp; 32
+
+  if (hasContinuationBit) {
+    // handle it
+  } else {
+    const isNegative = integer &amp; 1
+    const finalValue = isNegative ? -(integer &gt;&gt;&gt; 1) : integer &gt;&gt;&gt; 1
+    if (!rest) {
+      return decoded.concat(finalValue)
+    }
+
+    return decode(rest, decoded.concat(finalValue))
+  }
+}
+</code></pre>
+<p>This gives us the desired result.</p>
+<h2>Handling Continuation Bits</h2>
+<p>Now we need to handle decoding values greater than 31, that use a continuation bit. Let's decode <code>yB</code>, which should return <code>[25]</code>. First the code, than an explanation:</p>
+<pre><code class="language-ts">function decode(str: string, acc = 0, depth = 0, decoded = []) {
+  const [char, ...tail] = str
+  const rest = tail.join('')
+  const integer = charToInteger[char]
+
+  const hasContinuationBit = integer &amp; 32
+  const withoutContBit = integer &amp; 31
+  const shifted = (withoutContBit &lt;&lt; 5 * depth)
+  const value = acc | shifted
+
+  if (hasContinuationBit) {
+    return decode(rest, value, depth + 1, decoded)
+  } else {
+    const isNegative = value &amp; 1
+    const finalValue = isNegative ? -(value &gt;&gt;&gt; 1) : value &gt;&gt;&gt; 1
+    if (!rest) {
+      return decoded.concat(finalValue)
+    }
+
+    return decode(rest, 0, 0, decoded.concat(finalValue))
+  }
+}
+</code></pre>
+<p>A bunch of things are going on here. Starting with the updated signature:</p>
+<pre><code class="language-ts">function decode(str: string, acc = 0, depth = 0, decoded = []) {
+</code></pre>
+<p>We need to keep track of current accumulated value (eg, we decode <code>y</code>, adding it on to <code>0</code>, then we decode <code>B</code>, adding it on to the result of <code>decode(y) + 0</code> from the previous iteration. </p>
+<p>We also need a <code>depth</code> variable - for each continuation bit we encounter, we need to add 31 on to the decoded value. That's what is happening here:</p>
+<pre><code class="language-ts">const hasContinuationBit = integer &amp; 32
+const withoutContBit = integer &amp; 31
+const shifted = (withoutContBit &lt;&lt; 5 * depth)
+const value = acc | shifted
+</code></pre>
+<p>The <code>&amp; 31</code> effectively truncates the continuation bit - for example if we have 40, which is <code>101000</code> in binary, performing <code>101000 &amp; 11111</code> yields <code>01000</code>. It's just a concise way to truncate the continuation bit.</p>
+<p>Finally we have:</p>
+<pre><code class="language-ts">const shifted = (withoutContBit &lt;&lt; 5 * depth)
+const value = acc | shifted
+</code></pre>
+<p>This effectively sums <code>acc</code> (which is the current sum of all previously decoded values in field) and the current value. To really see this in action, work through an example with a larger number such as <code>63C</code> (1405).</p>
+<p>Using the <a href="https://en.wikipedia.org/wiki/Base64#Base64_table">Base 64</a> table, <code>6</code> is <code>111010</code> in binary. It has a continuation bit.</p>
+<ul>
+<li><code>acc</code>: <code>0</code></li>
+<li><code>withoutContBit</code>: <code>11010</code></li>
+<li><code>shifted</code>: <code>11010 &lt;&lt; 5 * 0 = 11010</code></li>
+<li><code>value</code>: <code>0 | 11010 = 11010</code></li>
+</ul>
+<p>Next is <code>3</code> which maps to <code>110111</code>. Again, lose the continuation bit. <code>depth</code> is now <code>1</code>:</p>
+<ul>
+<li><code>acc</code>: <code>11010</code></li>
+<li><code>withoutContBit</code>: <code>10111</code></li>
+<li><code>shifted</code>: <code>10111 &lt;&lt; 5 * 1 = 1011100000</code></li>
+<li><code>value</code>: <code>11010 | 1011100000 = 1011111010</code></li>
+</ul>
+<p>Next is <code>C</code> which maps to <code>000010</code>. Last iteration - there is no continuation bit. <code>depth</code> is now <code>2</code>:</p>
+<ul>
+<li><code>acc</code>: <code>1011111010</code></li>
+<li><code>withoutContBit</code>: <code>00010</code></li>
+<li><code>shifted</code>: <code>00010 &lt;&lt; 5 * 2 = 100000000000</code></li>
+<li><code>value</code>: <code>1011111010 | 100000000000 = 101011111010</code></li>
+</ul>
+<p>Finally, we see if the final bit is 0 for positive or 1 for negative, truncate it and return the value. In this case it's positive. so we return <code>+10101111101</code>, which gives us 1405. A bit messy, but we did it, and learned a thing or two along the way. </p>
+<h2>The Final Implementation</h2>
+<p>The final implementation is show below. It has a lot of temporary variables for clarity. It could be refactored to be much more concise.</p>
+<pre><code class="language-ts">const charToInteger: Record&lt;string, number&gt; = {}
+
+'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/='
+  .split('')
+  .forEach((char, i) =&gt; {
+    charToInteger[char] = i
+  })
+
+
+function decode(str: string, acc = 0, depth = 0, decoded = []) {
+  const [char, ...tail] = str
+  const rest = tail.join('')
+  const integer = charToInteger[char]
+
+  const hasContinuationBit = integer &amp; 32
+  const withoutContBit = integer &amp; 31
+  const shifted = (withoutContBit &lt;&lt; 5 * depth)
+  const value = acc | shifted
+
+  if (hasContinuationBit) {
+    return decode(rest, value, depth + 1, decoded)
+  }
+
+  const isNegative = value &amp; 1
+  const finalValue = isNegative ? -(value &gt;&gt;&gt; 1) : value &gt;&gt;&gt; 1
+  if (!rest) {
+    return decoded.concat(finalValue)
+  }
+
+  return decode(rest, 0, 0, decoded.concat(finalValue))
+}
+</code></pre>
+<p>Armed with our <code>decode</code> function, the next article will look at constructing a data structure to relate the compiled JavaScript and the original TypeScript, which will power the final part of the project, a source map visualization.</p>

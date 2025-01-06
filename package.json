@@ -7,6 +7,7 @@
     "dev": "gulp dev"
   },
   "dependencies": {
+    "chokidar": "^4.0.3",
     "execa": "^9.5.2",
     "gulp": "^5.0.0"
   }
