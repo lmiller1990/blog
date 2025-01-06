@@ -31,6 +31,11 @@ def articles(request: Request):
     )
 
 
+@app.get("/books")
+def books(request: Request):
+    return templates.TemplateResponse(request=request, name="books.html")
+
+
 @app.get("/articles/{slug}", response_class=HTMLResponse)
 def read_article(request: Request, slug: str):
     content = read_html(slug)
