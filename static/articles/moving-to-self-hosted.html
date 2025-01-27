@@ -1,0 +1,172 @@
+<p>I am moving from a hosted solution using Digital Ocean, Certbox and Namecheap to my own server. I will continue with Certbot and Namecheap, but bring my own server.</p>
+<p>First, install certbot:</p>
+<pre><code class="language-sh">sudo pacman -S certbot certbot-nginx
+</code></pre>
+<p>Now we request the certificates:</p>
+<pre><code class="language-sh">sudo certbot --nginx -d yourdomain.com -d www.yourdomain.com
+</code></pre>
+<p>I got an error. The reason - I need to update my DNS to point to my own server.</p>
+<p>I went to Namecheap, and changed from "Custom DNS" to "Namecheap Basic DNS". In "Advanced DNS" I configured the A Name Record and CNAME Record.</p>
+<table>
+<thead>
+<tr>
+<th>Record Type</th>
+<th>Host</th>
+<th>Value</th>
+<th>TTL</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A Record</td>
+<td>@</td>
+<td>101.182.139.174</td>
+<td>Automatic</td>
+</tr>
+<tr>
+<td>CNAME Record</td>
+<td>www</td>
+<td>lachlan-miller.me.</td>
+<td>Automatic</td>
+</tr>
+</tbody>
+</table>
+<p>Now we wait a while, and try to run the certbot command again. Once the DNS change has propogated, it should work.</p>
+<p>It kind of did. I got a new error:</p>
+<pre><code class="language-sh">sudo certbot --nginx -d lachlan-miller.me -d www.lachlan-miller.me
+Saving debug log to /var/log/letsencrypt/letsencrypt.log
+Requesting a certificate for lachlan-miller.me and www.lachlan-miller.me
+
+Successfully received certificate.
+Certificate is saved at: /etc/letsencrypt/live/lachlan-miller.me/fullchain.pem
+Key is saved at:         /etc/letsencrypt/live/lachlan-miller.me/privkey.pem
+This certificate expires on 2025-04-27.
+These files will be updated when the certificate renews.
+
+Deploying certificate
+Could not install certificate
+
+NEXT STEPS:
+- The certificate was saved, but could not be installed (installer: nginx). After fixing the error shown below, try installing it again by running:
+  certbot install --cert-name lachlan-miller.me
+- The certificate will need to be renewed before it expires. Certbot can automatically renew the certificate in the background, but you may need to take steps to enable that functionality. See https://certbot.org/renewal-setup for instructions.
+
+Could not automatically find a matching server block for lachlan-miller.me. Set the `server_name` directive to use the Nginx installer.
+</code></pre>
+<p>I need to add some basic nginx configuration. I like to put global configuration in <code>/etc/nginx/nginx.conf</code>, and site specific in <code>/etc/nginx/conf.d/*</code>.</p>
+<p>Top level, <code>/etc/nginx/nginx.conf</code>:</p>
+<pre><code class="language-nginx">worker_processes  auto;
+
+error_log  /var/log/nginx/error.log warn;
+pid        /var/run/nginx.pid;
+
+events {
+    worker_connections  1024;
+}
+
+http {
+    include       /etc/nginx/mime.types;
+    default_type  application/octet-stream;
+
+    log_format  main  '$remote_addr - $remote_user [$time_local] &quot;$request&quot; '
+        '$status $body_bytes_sent &quot;$http_referer&quot; '
+        '&quot;$http_user_agent&quot; &quot;$http_x_forwarded_for&quot;';
+
+    access_log  /var/log/nginx/access.log  main;
+
+    sendfile        on;
+    #tcp_nopush     on;
+
+    keepalive_timeout  65;
+
+    #gzip  on;
+
+    include /etc/nginx/conf.d/*.conf;
+}
+</code></pre>
+<p>And the site specific, <code>/etc/nginx/conf.d/lachlan.miller.me.conf</code>:</p>
+<pre><code class="language-nginx">server {
+    if ($host = www.lachlan-miller.me) {
+        return 301 https://$host$request_uri;
+    } # managed by Certbot
+
+
+    if ($host = lachlan-miller.me) {
+        return 301 https://$host$request_uri;
+    } # managed by Certbot
+
+
+        listen 80;
+        listen [::]:80;
+
+        server_name lachlan-miller.me www.lachlan-miller.me;
+
+        # Redirect all HTTP requests to HTTPS
+        return 301 https://$host$request_uri;
+
+
+
+
+}
+
+server {
+        listen 443 ssl;
+        listen [::]:443 ssl;
+        server_name lachlan-miller.me www.lachlan-miller.me;
+
+        # SSL configuration managed by Certbot
+    ssl_certificate /etc/letsencrypt/live/lachlan-miller.me/fullchain.pem; # managed by Certbot
+    ssl_certificate_key /etc/letsencrypt/live/lachlan-miller.me/privkey.pem; # managed by Certbot
+        include /etc/letsencrypt/options-ssl-nginx.conf; # Security-related options
+        ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
+
+        location / {
+                proxy_pass http://localhost:7500; # Proxy to your application
+                proxy_set_header Host $host;
+                proxy_set_header X-Real-IP $remote_addr;
+                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                proxy_set_header X-Forwarded-Proto $scheme;
+        }
+}
+</code></pre>
+<p>Now it works:</p>
+<pre><code class="language-sh">sudo certbot install --cert-name lachlan-miller.me
+sudo: /etc/sudo.conf is group writable
+sudo: /etc/sudo.conf is group writable
+Saving debug log to /var/log/letsencrypt/letsencrypt.log
+Deploying certificate
+Successfully deployed certificate for lachlan-miller.me to /etc/nginx/conf.d/lachlan-miller.me.conf
+Successfully deployed certificate for www.lachlan-miller.me to /etc/nginx/conf.d/lachlan-miller.me.conf
+</code></pre>
+<p>... kind of. My router needs to open port 443. I added these entries for IPv4 forwarding:</p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Protocol</th>
+<th>WAN Port</th>
+<th>LAN Port</th>
+<th>Destination IP</th>
+<th>Destination MAC</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>lachlan-https-server</td>
+<td>TCP</td>
+<td>443</td>
+<td>443</td>
+<td>192.168.0.130</td>
+<td>d8:3b:bf:30:d3:b0</td>
+</tr>
+<tr>
+<td>lachlan-server</td>
+<td>TCP</td>
+<td>80</td>
+<td>80</td>
+<td>192.168.0.130</td>
+<td>d8:3b:bf:30:d3:b0</td>
+</tr>
+</tbody>
+</table>
+<p>Now I see my <a href="https://lachlan-miller.me">website</a>, which is probably where you are reading this article!</p>

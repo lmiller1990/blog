@@ -1,0 +1,37 @@
+<h2>Custom Certificates</h2>
+<p>On Ubuntu, you can install a custom certificate like this:</p>
+<pre><code class="language-sh">sudo apt install -yy ca-certificates
+sudo cp microba-root-ca.crt /usr/local/share/ca-certificates/
+ls -aFlh /usr/local/share/ca-certificates/
+sudo update-ca-certificates
+</code></pre>
+<p>Arch Linux uses a different command, <code>update-ca-trust</code>, which is part of <code>ca-certificates-utils</code>.</p>
+<pre><code class="language-sh">sudo pacman -S ca-certificates-utils
+</code></pre>
+<p>Next, place your certificate in <code>/etc/ca-certificates/trust-sources/anchors</code></p>
+<pre><code class="language-sh">sudo cp your-root-ca.crt /etc/ca-certificates/trust-source/anchors/
+``
+
+And update the trusted certificates using:
+
+```sh
+sudo update-ca-trust
+</code></pre>
+<p>Finally, run <code>trust list</code> and you should see your certificate there.</p>
+<h2>Allow IPv4 Forwarding</h2>
+<p>This was also required to access my internal work network, which requires a VPN (Tailscale) and a custom root certificate.</p>
+<p>I ran:</p>
+<pre><code class="language-sh">sysctl net.ipv4.ip_forward
+</code></pre>
+<p>Which was set to 0. I needed to enable it!</p>
+<p>You can temporarily do it like this:</p>
+<pre><code class="language-sh">sudo sysctl -w net.ipv4.ip_forward=1
+</code></pre>
+<p>Better yet, make it permanent:</p>
+<pre><code class="language-sh">sudo nvim /etc/sysctl.d/99-sysctl.conf
+# add this
+net.ipv4.ip_forward=1
+# restart
+sudo sysctl --system
+</code></pre>
+<p>Arch is great - you need to learn how things work, but this really forces you to understand what's going on. I like it.</p>
