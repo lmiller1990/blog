@@ -23,16 +23,6 @@ class Article(TypedDict):
 def extract_meta(text: str) -> tuple[dict[str, str], str]:
     meta: dict[str, str] = dict()
 
-    # if lines[0].strip() != "+++":
-    #     raise RuntimeError("Expected first line to be +++")
-    # lines = lines[1:]
-    # while lines[0].strip() != "+++":
-    #     key, value = lines[0].strip().split(":", 1)
-    #     meta[key.strip()] = value.strip()
-    #     lines = lines[1:]
-
-    # lines = lines[1:]
-    # return meta, lines
     # Split the text using the '+++' delimiters
     parts = text.split("+++")
 

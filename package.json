@@ -1,14 +1,16 @@
 {
-  "type": "module",
-  "devDependencies": {
-    "tailwindcss": "^3.4.17"
-  },
-  "scripts": {
-    "dev": "gulp dev"
-  },
-  "dependencies": {
-    "chokidar": "^4.0.3",
-    "execa": "^9.5.2",
-    "gulp": "^5.0.0"
-  }
+   "dependencies" : {
+      "chokidar" : "^4.0.3",
+      "execa" : "^9.5.2",
+      "gulp" : "^5.0.0"
+   },
+   "devDependencies" : {
+      "tailwindcss" : "^3.4.17"
+   },
+   "scripts" : {
+      "build" : "npm run tailwind:build && poetry run python build.py",
+      "dev" : "poetry run fastapi dev server.py --port 7777",
+      "tailwind:build" : "tailwindcss -i templates/index.css -o ./static/output.css"
+   },
+   "type" : "module"
 }
