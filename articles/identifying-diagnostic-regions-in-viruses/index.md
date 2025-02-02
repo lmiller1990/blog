@@ -194,6 +194,12 @@ We can ask for the nucleotides in fasta format!
 
 ```sh
 efetch -db nucleotide -id PQ164815.1 -format fasta
+
+# or, all at once:
+for acc in $(jq -r '.reports[] | select(.completeness == "COMPLETE") | .accession' hadv.json)
+do
+    efetch -db nucleotide -id ${acc} -format fasta > ${acc}.fasta
+done
 ```
 
 Weirdly, the fasta files are incorrectly formatted? The first line is 
@@ -202,7 +208,19 @@ Weirdly, the fasta files are incorrectly formatted? The first line is
 >OL450401.1 Human adenovirus sp. isolate MKC_4, complete genom
 ```
 
-Should be a space after the `>`. I fixed them up, put two into a single file, to run `clustalo`, found [here](http://www.clustal.org/omega/).
+Should be a space after the `>`. I fixed them up:
+
+```sh
+#!/bin/bash
+
+# Loop over all .fasta files in the current directory
+for file in *.fasta; do
+    # Use sed to add a space after '>' if there isn't one
+    sed -i 's/^>\([^ ]\)/> \1/' "$file"
+done
+```
+
+Then, put two into a single file, to run `clustalo`, found [here](http://www.clustal.org/omega/).
 
 Before we do, let's look at what we are dealing with:
 

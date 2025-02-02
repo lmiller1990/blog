@@ -1,0 +1,161 @@
+<h1>Identifying Unique Regions in Viruses using NCBI</h1>
+<p>My goal is to use some common tools and do some bioinformatics to identify interesting regions in Adenovirus genomes. Let's start with a high level plan:</p>
+<ol>
+<li>Get a bunch of adenovirus genomes, ideally ones that are as complete as possible.</li>
+<li>Do a MSA (multiple sequence alignment)</li>
+<li>From the MSA results, try to find regions with low mutations (conserved universal markers) or regions unique to a specific type of adenovirus (say, Adenovirus F).</li>
+<li>Scrutinize said regions - anything interesting?</li>
+</ol>
+<h2>Getting some Adenovirus</h2>
+<p>We can use the <code>datasets</code> command line tool from the NCBI. You can get datasets <a href="https://www.ncbi.nlm.nih.gov/datasets/docs/v2/command-line-tools/download-and-install/">here</a>.</p>
+<p>It has a bunch of useful features -- including one specifically for finding viral genomes!</p>
+<pre><code>$ datasets summary virus --help
+
+Print a data report containing virus genome metadata by accession or taxon. The data report is returned in JSON format.
+
+Usage
+  datasets summary virus [flags]
+  datasets summary virus [command]
+
+Available Commands
+  genome      Print a data report containing virus genome metadata by accession or taxon
+
+Global Flags
+      --api-key string   Specify an NCBI API key
+      --debug            Emit debugging info
+      --help             Print detailed help about a datasets command
+      --version          Print version of datasets
+
+Use datasets summary virus &lt;command&gt; --help for detailed help about a command.
+</code></pre>
+<p>We want to search for genomes. That help screen is useful, too:</p>
+<pre><code>datasets summary virus genome --help
+
+Print a data report containing virus genome metadata by nucleotide accession or taxon. The data report is returned in JSON format.
+
+Refer to NCBI's [download and install](https://www.ncbi.nlm.nih.gov/datasets/docs/v2/download-and-install/) documentation for information about getting started with the command-line tools.
+
+Usage
+  datasets summary virus genome [flags]
+  datasets summary virus genome [command]
+
+Sample Commands
+  datasets summary virus genome accession NC_045512.2
+          datasets summary virus genome taxon sars-cov-2 --host dog
+
+Available Commands
+  taxon       Print a data report containing virus genome metadata by taxon (NCBI Taxonomy ID, scientific or common name for any virus at any tax rank)
+  accession   Print a data report containing virus genome metadata by accession
+</code></pre>
+<p><code>taxon</code> is the most useful command here, since we aren't look for a particular accession - just a general "give me the viruses".</p>
+<p>We can do this as such:</p>
+<pre><code>datasets summary virus genome taxon &quot;adenovirus&quot; | json_pp &gt; adenovirus.json
+</code></pre>
+<p>The resulting file has tons of information. I got about 900 entries, here's the general structure:</p>
+<pre><code class="language-json">{
+   &quot;accession&quot; : &quot;V01485.1&quot;,
+   &quot;completeness&quot; : &quot;PARTIAL&quot;,
+   &quot;length&quot; : 179,
+   &quot;nucleotide&quot; : {
+      &quot;sequence_hash&quot; : &quot;FF2602D4&quot;
+   },
+   &quot;release_date&quot; : &quot;1983-12-06T00:00:00Z&quot;,
+   &quot;source_database&quot; : &quot;GenBank&quot;,
+   &quot;submitter&quot; : {
+      &quot;names&quot; : [
+         &quot;Brinckmann,U.&quot;,
+         &quot;Darai,G.&quot;,
+         &quot;Flugel,R.M.&quot;
+      ]
+   },
+   &quot;update_date&quot; : &quot;1991-07-08T00:00:00Z&quot;,
+   &quot;virus&quot; : {
+      &quot;lineage&quot; : [
+         {
+            &quot;name&quot; : &quot;Viruses&quot;,
+            &quot;tax_id&quot; : 10239
+         },
+         {
+            &quot;name&quot; : &quot;Varidnaviria&quot;,
+            &quot;tax_id&quot; : 2732004
+         },
+         {
+            &quot;name&quot; : &quot;Bamfordvirae&quot;,
+            &quot;tax_id&quot; : 2732005
+         },
+         // ...
+         {
+            &quot;name&quot; : &quot;unclassified Mastadenovirus&quot;,
+            &quot;tax_id&quot; : 346173
+         },
+         {
+            &quot;name&quot; : &quot;unidentified adenovirus&quot;,
+            &quot;tax_id&quot; : 10535
+         }
+      ],
+      &quot;organism_name&quot; : &quot;unidentified adenovirus&quot;,
+      &quot;tax_id&quot; : 10535
+   }
+}
+</code></pre>
+<p>This sample only has a length of 179 - basically a fragment. An entire Adenovirus genome is in the ballpark of ~35k bp. We can filter them a bit:</p>
+<pre><code class="language-sh">jq '.reports[] | select(.completeness == &quot;COMPLETE&quot;) | .length' adenovirus.json
+24633
+24630
+24659
+</code></pre>
+<p>Three of the genomes are considered complete. How about we filter based on length?</p>
+<pre><code class="language-sh">jq '.reports[] | select(.length &gt;= 30000) | &quot;\(.completeness) \(.length)&quot;' adenovirus.json | wc -l
+</code></pre>
+<p>This gives us 82 genomes - interestingly enough, although longer than the "complete" genomes, these are considered incomplete.</p>
+<p>It turns out there are lots of adenoviruses. I'm interested in the mastadenovirus, which are the ones that infect humans. There are bunch of different types, A-G. We can search with a different term, "HAdV", whihc <strong>Human </strong>Adenovirus**.</p>
+<p>I didn't find anything - <code>datasets</code> gave me an error:</p>
+<pre><code>Error: The taxonomy name 'hadv'  is not a virus taxon. Try using one of the suggested taxids:
+Human mastadenovirus B (species, taxid: 108098, HAdV-B)
+Human mastadenovirus C (species, taxid: 129951, HAdV-C)
+Human mastadenovirus D (species, taxid: 130310, HAdV-D)
+Human adenovirus 81 (serotype, taxid: 1972755, HAdV 81)
+Human adenovirus 56 (no-rank, taxid: 880565, HAdV-D56)
+Human mastadenovirus F (species, taxid: 130309, HAdV-F)
+Human adenovirus 61 (no-rank, taxid: 1069441, HAdV 61)
+Human adenovirus 65 (serotype, taxid: 1094363, HAdV 65)
+Human mastadenovirus E (species, taxid: 130308, HAdV-E)
+Human mastadenovirus A (species, taxid: 129875, HAdV-A)
+</code></pre>
+<p>I tried "human adenovirus". I got a bunch of hits, 20 of which were complete!</p>
+<pre><code>jq '.reports[] | select(.completeness == &quot;COMPLETE&quot;) | .length' hadv.json  | wc -l #=&gt; 20
+</code></pre>
+<p>We can grab the accession:</p>
+<pre><code class="language-sh">jq '.reports[] | select(.completeness == &quot;COMPLETE&quot;) | .accession' hadv.json
+&quot;PQ164815.1&quot;
+&quot;OL450401.1&quot;
+&quot;MW306919.1&quot;
+&quot;MT113944.1&quot;
+&quot;MT113943.1&quot;
+&quot;MT113942.1&quot;
+&quot;MK570619.1&quot;
+&quot;MK570618.1&quot;
+&quot;MK357715.1&quot;
+&quot;MK357714.1&quot;
+&quot;MK241690.1&quot;
+&quot;LC215437.1&quot;
+&quot;LC215436.1&quot;
+&quot;LC215435.1&quot;
+&quot;LC215434.1&quot;
+&quot;LC215433.1&quot;
+&quot;LC215429.1&quot;
+&quot;KY002685.1&quot;
+&quot;KY002684.1&quot;
+&quot;KY002683.1
+</code></pre>
+<p>Now, let's get the genomes. We can visit the direct link by going to https://www.ncbi.nlm.nih.gov/nuccore/{entry}, but we can grab them all using <a href="https://www.ncbi.nlm.nih.gov/books/NBK179288/">NCBI Entrez</a>.</p>
+<p>We can ask for the nucleotides in fasta format!</p>
+<pre><code class="language-sh">efetch -db nucleotide -id PQ164815.1 -format fasta
+</code></pre>
+<p>Weirdly, the fasta files are incorrectly formatted? The first line is </p>
+<pre><code class="language-fasta">&gt;OL450401.1 Human adenovirus sp. isolate MKC_4, complete genom
+</code></pre>
+<p>Should be a space after the <code>&gt;</code>. I fixed them up, put two into a single file, and ran <code>clustalo</code>, found <a href="http://www.clustal.org/omega/">here</a>.</p>
+<pre><code class="language-sh">clustalo -i all.fasta -o aligned.aln
+</code></pre>
+<p>TODO: find out how to identify highly convserved regions programatically.</p>
