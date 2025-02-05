@@ -1,0 +1,29 @@
+{
+    "organism": [
+        "Human adenovirus sp."
+    ],
+    "mol_type": [
+        "genomic DNA"
+    ],
+    "serotype": [
+        "41"
+    ],
+    "isolate": [
+        "F846/Beijing/09/2015"
+    ],
+    "isolation_source": [
+        "feces"
+    ],
+    "host": [
+        "Homo sapiens"
+    ],
+    "db_xref": [
+        "taxon:1907210"
+    ],
+    "geo_loc_name": [
+        "China"
+    ],
+    "collection_date": [
+        "Sep-2015"
+    ]
+}

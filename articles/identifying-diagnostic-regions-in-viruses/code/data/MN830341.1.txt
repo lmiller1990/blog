@@ -1,0 +1,29 @@
+{
+    "organism": [
+        "Human adenovirus sp."
+    ],
+    "mol_type": [
+        "genomic DNA"
+    ],
+    "isolate": [
+        "15 ANKARA03/16"
+    ],
+    "isolation_source": [
+        "whole blood"
+    ],
+    "host": [
+        "Homo sapiens"
+    ],
+    "db_xref": [
+        "taxon:1907210"
+    ],
+    "geo_loc_name": [
+        "Turkey"
+    ],
+    "collection_date": [
+        "2016"
+    ],
+    "collected_by": [
+        "A. Bastug"
+    ]
+}

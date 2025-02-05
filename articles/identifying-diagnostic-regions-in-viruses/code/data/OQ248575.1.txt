@@ -1,0 +1,26 @@
+{
+    "organism": [
+        "Human adenovirus sp."
+    ],
+    "mol_type": [
+        "genomic DNA"
+    ],
+    "isolate": [
+        "AdV-Hainan-HMU-HKU-0609027-2021"
+    ],
+    "isolation_source": [
+        "throat swab"
+    ],
+    "host": [
+        "Homo sapiens"
+    ],
+    "db_xref": [
+        "taxon:1907210"
+    ],
+    "geo_loc_name": [
+        "China"
+    ],
+    "collection_date": [
+        "Mar-2021"
+    ]
+}

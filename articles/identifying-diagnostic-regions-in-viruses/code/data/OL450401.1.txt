@@ -1,0 +1,23 @@
+{
+    "organism": [
+        "Human adenovirus sp."
+    ],
+    "mol_type": [
+        "genomic DNA"
+    ],
+    "isolate": [
+        "MKC_4"
+    ],
+    "host": [
+        "Homo sapiens"
+    ],
+    "db_xref": [
+        "taxon:1907210"
+    ],
+    "geo_loc_name": [
+        "India"
+    ],
+    "collection_date": [
+        "2018"
+    ]
+}

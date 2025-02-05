@@ -1,0 +1,26 @@
+{
+    "organism": [
+        "Human adenovirus sp."
+    ],
+    "mol_type": [
+        "genomic DNA"
+    ],
+    "isolate": [
+        "Hu/ETH/GR25/AdV-41/2016"
+    ],
+    "isolation_source": [
+        "feces"
+    ],
+    "host": [
+        "Homo sapiens"
+    ],
+    "db_xref": [
+        "taxon:1907210"
+    ],
+    "geo_loc_name": [
+        "Ethiopia"
+    ],
+    "collection_date": [
+        "2016"
+    ]
+}

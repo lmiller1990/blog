@@ -1,0 +1,32 @@
+{
+    "organism": [
+        "Human adenovirus sp."
+    ],
+    "mol_type": [
+        "genomic DNA"
+    ],
+    "strain": [
+        "HAdVD/IAL-AD31/2017/BRA"
+    ],
+    "isolate": [
+        "IAL-AD31/17"
+    ],
+    "isolation_source": [
+        "stool sample"
+    ],
+    "host": [
+        "Homo sapiens"
+    ],
+    "db_xref": [
+        "taxon:1907210"
+    ],
+    "geo_loc_name": [
+        "Brazil"
+    ],
+    "collection_date": [
+        "2017"
+    ],
+    "note": [
+        "group: D"
+    ]
+}

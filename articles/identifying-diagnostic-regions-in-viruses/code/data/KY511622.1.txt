@@ -1,0 +1,29 @@
+{
+    "organism": [
+        "Human adenovirus sp."
+    ],
+    "mol_type": [
+        "genomic DNA"
+    ],
+    "serotype": [
+        "7"
+    ],
+    "isolate": [
+        "HB17"
+    ],
+    "isolation_source": [
+        "throat swab"
+    ],
+    "host": [
+        "Homo sapiens"
+    ],
+    "db_xref": [
+        "taxon:1907210"
+    ],
+    "geo_loc_name": [
+        "China"
+    ],
+    "collection_date": [
+        "24-Feb-2013"
+    ]
+}

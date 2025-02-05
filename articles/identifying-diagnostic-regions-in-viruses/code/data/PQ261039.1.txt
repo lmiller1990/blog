@@ -1,0 +1,26 @@
+{
+    "organism": [
+        "Human adenovirus sp."
+    ],
+    "mol_type": [
+        "genomic DNA"
+    ],
+    "isolate": [
+        "HAdV/CU203/THA/2024"
+    ],
+    "isolation_source": [
+        "nasopharyngeal swab"
+    ],
+    "host": [
+        "Homo sapiens"
+    ],
+    "db_xref": [
+        "taxon:1907210"
+    ],
+    "geo_loc_name": [
+        "Thailand"
+    ],
+    "collection_date": [
+        "31-Jul-2024"
+    ]
+}

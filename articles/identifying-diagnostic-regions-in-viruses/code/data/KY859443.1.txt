@@ -1,0 +1,32 @@
+{
+    "organism": [
+        "Human adenovirus sp."
+    ],
+    "mol_type": [
+        "genomic DNA"
+    ],
+    "strain": [
+        "Hu/F-41/18112008_PT02/2008/PA/BRA"
+    ],
+    "serotype": [
+        "41"
+    ],
+    "isolate": [
+        "18112008_PT02"
+    ],
+    "isolation_source": [
+        "environment water"
+    ],
+    "host": [
+        "Homo sapiens"
+    ],
+    "db_xref": [
+        "taxon:1907210"
+    ],
+    "geo_loc_name": [
+        "Brazil"
+    ],
+    "collection_date": [
+        "18-Nov-2008"
+    ]
+}

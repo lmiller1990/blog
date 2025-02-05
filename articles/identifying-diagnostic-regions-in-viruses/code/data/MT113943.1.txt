@@ -1,0 +1,29 @@
+{
+    "organism": [
+        "Human adenovirus sp."
+    ],
+    "mol_type": [
+        "genomic DNA"
+    ],
+    "isolate": [
+        "CQ45"
+    ],
+    "isolation_source": [
+        "nasopharyngeal aspiration"
+    ],
+    "host": [
+        "Homo sapiens"
+    ],
+    "db_xref": [
+        "taxon:1907210"
+    ],
+    "geo_loc_name": [
+        "China"
+    ],
+    "collection_date": [
+        "25-Mar-2019"
+    ],
+    "note": [
+        "CHCMU 45; B7"
+    ]
+}

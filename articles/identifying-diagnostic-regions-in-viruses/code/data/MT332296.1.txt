@@ -1,0 +1,32 @@
+{
+    "organism": [
+        "Human adenovirus sp."
+    ],
+    "mol_type": [
+        "genomic DNA"
+    ],
+    "strain": [
+        "HAdVC1/IAL-AD13-9776/2010/BRA"
+    ],
+    "isolate": [
+        "IAL-AD13-9776/10"
+    ],
+    "isolation_source": [
+        "feces"
+    ],
+    "host": [
+        "Homo sapiens"
+    ],
+    "db_xref": [
+        "taxon:1907210"
+    ],
+    "geo_loc_name": [
+        "Brazil"
+    ],
+    "collection_date": [
+        "2010"
+    ],
+    "note": [
+        "group: C; genotype: 1"
+    ]
+}

@@ -1,0 +1,23 @@
+{
+    "organism": [
+        "Human adenovirus sp."
+    ],
+    "mol_type": [
+        "genomic DNA"
+    ],
+    "strain": [
+        "B7"
+    ],
+    "isolate": [
+        "SM14"
+    ],
+    "isolation_source": [
+        "keratocounjuctivitis"
+    ],
+    "host": [
+        "Homo sapiens"
+    ],
+    "db_xref": [
+        "taxon:1907210"
+    ]
+}

@@ -1,0 +1,26 @@
+{
+    "organism": [
+        "Human adenovirus sp."
+    ],
+    "mol_type": [
+        "genomic DNA"
+    ],
+    "isolate": [
+        "S179/TS/CHN/2019"
+    ],
+    "db_xref": [
+        "taxon:1907210"
+    ],
+    "geo_loc_name": [
+        "China"
+    ],
+    "lat_lon": [
+        "39.63 N 118.20 E"
+    ],
+    "collection_date": [
+        "16-Feb-2019"
+    ],
+    "collected_by": [
+        "Lang Yang"
+    ]
+}

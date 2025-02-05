@@ -1,0 +1,29 @@
+{
+    "organism": [
+        "Human adenovirus sp."
+    ],
+    "mol_type": [
+        "genomic RNA"
+    ],
+    "strain": [
+        "SONMX-53"
+    ],
+    "isolation_source": [
+        "children with gastroenteritis"
+    ],
+    "host": [
+        "Homo sapiens"
+    ],
+    "db_xref": [
+        "taxon:1907210"
+    ],
+    "geo_loc_name": [
+        "Mexico"
+    ],
+    "collection_date": [
+        "2013"
+    ],
+    "note": [
+        "genotype: Human adenovirus-6"
+    ]
+}

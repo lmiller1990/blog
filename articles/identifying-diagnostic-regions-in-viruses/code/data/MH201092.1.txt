@@ -1,0 +1,32 @@
+{
+    "organism": [
+        "Human adenovirus sp."
+    ],
+    "mol_type": [
+        "genomic DNA"
+    ],
+    "strain": [
+        "HAdVC2/IAL-AD944/2014/BRA"
+    ],
+    "isolate": [
+        "IAL-AD944/14"
+    ],
+    "isolation_source": [
+        "stool sample"
+    ],
+    "host": [
+        "Homo sapiens"
+    ],
+    "db_xref": [
+        "taxon:1907210"
+    ],
+    "geo_loc_name": [
+        "Brazil"
+    ],
+    "collection_date": [
+        "2014"
+    ],
+    "note": [
+        "group: C; genotype: 2"
+    ]
+}

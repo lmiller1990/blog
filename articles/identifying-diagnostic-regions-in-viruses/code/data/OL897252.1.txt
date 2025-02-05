@@ -1,0 +1,29 @@
+{
+    "organism": [
+        "Human adenovirus sp."
+    ],
+    "mol_type": [
+        "genomic DNA"
+    ],
+    "strain": [
+        "HAdV/S195/Huzhou/2018/CHN"
+    ],
+    "isolate": [
+        "S2018195"
+    ],
+    "isolation_source": [
+        "stool sample"
+    ],
+    "host": [
+        "Homo sapiens"
+    ],
+    "db_xref": [
+        "taxon:1907210"
+    ],
+    "geo_loc_name": [
+        "China"
+    ],
+    "collection_date": [
+        "03-Dec-2018"
+    ]
+}

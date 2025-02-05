@@ -1,0 +1,26 @@
+{
+    "organism": [
+        "Human adenovirus sp."
+    ],
+    "mol_type": [
+        "genomic DNA"
+    ],
+    "serotype": [
+        "4"
+    ],
+    "isolate": [
+        "HK28"
+    ],
+    "isolation_source": [
+        "throat swab from a child with ARD"
+    ],
+    "host": [
+        "Homo sapiens"
+    ],
+    "db_xref": [
+        "taxon:1907210"
+    ],
+    "collection_date": [
+        "11-Aug-2014"
+    ]
+}

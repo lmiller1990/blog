@@ -1,0 +1,32 @@
+{
+    "organism": [
+        "Human adenovirus sp."
+    ],
+    "mol_type": [
+        "genomic DNA"
+    ],
+    "isolate": [
+        "AK323"
+    ],
+    "isolation_source": [
+        "feces"
+    ],
+    "host": [
+        "Homo sapiens"
+    ],
+    "db_xref": [
+        "taxon:1907210"
+    ],
+    "geo_loc_name": [
+        "South Africa"
+    ],
+    "collection_date": [
+        "15-Jan-2018"
+    ],
+    "collected_by": [
+        "A. Kuca"
+    ],
+    "note": [
+        "genotype: Species D"
+    ]
+}

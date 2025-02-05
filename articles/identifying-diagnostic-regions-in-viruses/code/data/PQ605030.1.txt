@@ -1,0 +1,29 @@
+{
+    "organism": [
+        "Human adenovirus sp."
+    ],
+    "mol_type": [
+        "genomic DNA"
+    ],
+    "isolate": [
+        "JP19530"
+    ],
+    "isolation_source": [
+        "stool"
+    ],
+    "host": [
+        "Homo sapiens"
+    ],
+    "db_xref": [
+        "taxon:1907210"
+    ],
+    "geo_loc_name": [
+        "Japan"
+    ],
+    "collection_date": [
+        "20-Dec-2022"
+    ],
+    "note": [
+        "genotype: F41"
+    ]
+}

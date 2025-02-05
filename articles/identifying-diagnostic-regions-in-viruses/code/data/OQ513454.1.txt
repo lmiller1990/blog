@@ -1,0 +1,29 @@
+{
+    "organism": [
+        "Human adenovirus sp."
+    ],
+    "mol_type": [
+        "genomic DNA"
+    ],
+    "isolate": [
+        "CMH-S006-20"
+    ],
+    "isolation_source": [
+        "stool"
+    ],
+    "host": [
+        "Homo sapiens"
+    ],
+    "db_xref": [
+        "taxon:1907210"
+    ],
+    "geo_loc_name": [
+        "Thailand"
+    ],
+    "collection_date": [
+        "05-May-2020"
+    ],
+    "note": [
+        "genotype: F41"
+    ]
+}

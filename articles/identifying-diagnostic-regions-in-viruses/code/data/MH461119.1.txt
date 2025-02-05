@@ -1,0 +1,32 @@
+{
+    "organism": [
+        "Human adenovirus sp."
+    ],
+    "mol_type": [
+        "genomic DNA"
+    ],
+    "isolate": [
+        "BSTP"
+    ],
+    "isolation_source": [
+        "sewage sample"
+    ],
+    "host": [
+        "Homo sapiens"
+    ],
+    "db_xref": [
+        "taxon:1907210"
+    ],
+    "geo_loc_name": [
+        "India: Ludhiana, Punjab"
+    ],
+    "lat_lon": [
+        "30.93 N 75.79 E"
+    ],
+    "collection_date": [
+        "Feb-2017"
+    ],
+    "collected_by": [
+        "Asima Zehra"
+    ]
+}

@@ -1,0 +1,26 @@
+{
+    "organism": [
+        "Human adenovirus sp."
+    ],
+    "mol_type": [
+        "genomic DNA"
+    ],
+    "strain": [
+        "RM210102016"
+    ],
+    "isolation_source": [
+        "diarrhoea feces"
+    ],
+    "host": [
+        "Homo sapiens"
+    ],
+    "db_xref": [
+        "taxon:1907210"
+    ],
+    "geo_loc_name": [
+        "India: Manipur"
+    ],
+    "collection_date": [
+        "2016"
+    ]
+}

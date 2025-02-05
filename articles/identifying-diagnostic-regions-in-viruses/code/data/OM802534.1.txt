@@ -1,0 +1,26 @@
+{
+    "organism": [
+        "Human adenovirus sp."
+    ],
+    "mol_type": [
+        "genomic DNA"
+    ],
+    "isolate": [
+        "HAd 85"
+    ],
+    "isolation_source": [
+        "patient with acute respiratory infection"
+    ],
+    "host": [
+        "Homo sapiens"
+    ],
+    "db_xref": [
+        "taxon:1907210"
+    ],
+    "geo_loc_name": [
+        "Belarus"
+    ],
+    "collection_date": [
+        "2021"
+    ]
+}

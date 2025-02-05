@@ -188,6 +188,13 @@ jq '.reports[] | select(.completeness == "COMPLETE") | .accession' hadv.json
 "KY002683.1
 ```
 
+I ended up writing some python to map these to the groups (A-G). It turns out:
+
+KY => B
+MT => B
+LC => D
+MW => E
+
 Now, let's get the genomes. We can visit the direct link by going to https://www.ncbi.nlm.nih.gov/nuccore/{entry}, but we can grab them all using [NCBI Entrez](https://www.ncbi.nlm.nih.gov/books/NBK179288/).
 
 We can ask for the nucleotides in fasta format!
@@ -234,7 +241,16 @@ According to NCBI, the first is Adenovirus D. The second doesn't say.
 Now, run `clustalo`:
 
 ```sh
+# 2 sequences, about 1m on my machine
 clustalo -i all.fasta -o aligned.aln --outfmt=clustal
+```
+
+Doing them all will take a long time. I did 2 here. I also did all the ones starting with LC\*, like this:
+
+```sh
+# 6 sequences, about 1m on my machine
+cat LC2154* > LC.fasta
+clustalo -i LC.fasta -o LC.aln --outfmt=clusta
 ```
 
 I used `--outfmt=clustal` since I found the BioPython library, which I use for the consensus sequence, doesn't work with the default output from clustalo.
@@ -287,6 +303,159 @@ plt.title("Genomic Variability in Adenovirus")
 plt.show()
 ```
 
-![](./shannon.png]
+![](./shannon.png)
 
 Almost the entire thing is 1 - there is hardly any conserved regions. I think that's because they are two different strains of Adenovirus, which has a lot of variability.
+
+I did the same thing for the LC* samples mentioned earlier - I checked them all on NCBI, those are all Adenovirus D.
+
+![](./LC_entropy.png)
+
+## Adenovirus F
+
+I am paricularly interested in Adenovirus F. The JSON file we got with `datasets` doesn't tell us the serotype, though. We can get some more information via the NBCI data, though, with a nifty python script:
+
+```python
+accessions = [
+    "PQ605050.1",
+    # ...
+    "KY002684.1",
+    "KY002683.1",
+]
+
+from Bio import Entrez
+from Bio import SeqIO
+import json
+import time
+
+Entrez.email = "lachlan@lachlan-miller.me"
+
+def fetch_serotype(accession):
+    # don't hammer the server
+    time.sleep(0.2)
+
+    try:
+        # Fetch the GenBank record from NCBI
+        with Entrez.efetch(db="nucleotide", id=accession, rettype="gb", retmode="text") as handle:
+            record = SeqIO.read(handle, "genbank")
+
+            # Search for the serotype in the features
+            for feature in record.features:
+                if feature.type == 'source':
+                    with open(f"data/{accession}.txt", "w") as f:
+                        if feature.qualifiers:
+                            out = json.dumps(feature.qualifiers, indent=4)
+                            print(accession, out)
+                            f.write(out)
+
+    except Exception as e:
+        print(f"Error fetching {accession}: {e}")
+
+for idx, accession in enumerate(accessions):
+    print(f"{idx} / {len(accessions)}")
+    fetch_serotype(accession)
+```
+
+We get a bunch of information, eg:
+
+```json
+{
+    "organism": [
+        "Human adenovirus sp."
+    ],
+    "mol_type": [
+        "genomic DNA"
+    ],
+    "strain": [
+        "HAdV-F41/IAL-AD10449/2006/BRA"
+    ],
+    "isolate": [
+        "IAL-AD10449/06"
+    ],
+    "isolation_source": [
+        "feces"
+    ],
+    "host": [
+        "Homo sapiens"
+    ],
+    "db_xref": [
+        "taxon:1907210"
+    ],
+    "geo_loc_name": [
+        "Brazil"
+    ],
+    "collection_date": [
+        "2006"
+    ],
+    "note": [
+        "group: F; genotype: 41"
+    ]
+}
+```
+
+Where the `note` and `strain` tell us this is Adenovirus F. Not every dataset is as clear:
+
+```json
+{
+    "organism": [
+        "Human adenovirus sp."
+    ],
+    "mol_type": [
+        "genomic DNA"
+    ],
+    "strain": [
+        "HAdV/S154/Huzhou/2021/CHN"
+    ],
+    "isolate": [
+        "S2021154"
+    ],
+    "isolation_source": [
+        "stool sample"
+    ],
+    "host": [
+        "Homo sapiens"
+    ],
+    "db_xref": [
+        "taxon:1907210"
+    ],
+    "geo_loc_name": [
+        "China"
+    ],
+    "collection_date": [
+        "17-Jun-2021"
+    ]
+}
+```
+
+Looking closer on NCBI:
+
+```
+LOCUS       OL897264                 761 bp    DNA     linear   VRL 15-NOV-2022
+```
+
+It's only 761bp - can't say much with such a tiny snippet of DNA.
+
+
+I grabbed the nucleotides for each one with `genotype: F41`:
+
+
+```sh
+grep -ir "genotype: F41" | sed 's/\.txt:.*//' | while read id; do
+echo "fetching $id..."; efetch -db nucleotide -id "$id" -format fasta  > "../adenovirus_f_snippets/$id.fasta"
+```
+
+After some more wrangling, I found a bunch of sequences around 474 nucleotides long, each one labeled
+
+```
+Human adenovirus sp. isolate TUN/20778/HAdV-41/2014 hexon gene, partial cds
+```
+
+Looking one of the sequences up: https://www.ncbi.nlm.nih.gov/nuccore/OP078715.1/
+
+There's plenty of information about the [Adenovirus hexon gene](https://en.wikipedia.org/wiki/Hexon_protein).
+
+I did a BLAST - this gene looks to be a compelling diagnostic marker for Adenovirus F (type 41).
+
+![](./blast_adeno.png)
+
+![](./blast_taxa.png)

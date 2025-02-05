@@ -1,0 +1,29 @@
+{
+    "organism": [
+        "Human adenovirus sp."
+    ],
+    "mol_type": [
+        "genomic DNA"
+    ],
+    "serotype": [
+        "7"
+    ],
+    "host": [
+        "Homo sapiens"
+    ],
+    "db_xref": [
+        "taxon:1907210"
+    ],
+    "clone": [
+        "PCH.ADVHEX-HAdv-B/7-12062016"
+    ],
+    "geo_loc_name": [
+        "USA"
+    ],
+    "collection_date": [
+        "06-Dec-2016"
+    ],
+    "PCR_primers": [
+        "fwd_name: adtu7, fwd_seq: gccaccttcttccccatggc, rev_name: adtu4, rev_seq: gtagcgttgccggccgagaa"
+    ]
+}

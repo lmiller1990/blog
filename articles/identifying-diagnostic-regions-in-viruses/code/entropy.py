@@ -8,9 +8,9 @@ def shannon_entropy(column):
     return -np.sum(freq * np.log2(freq))
 
 
-alignment = AlignIO.read("../aligned.aln", "clustal")
+# alignment = AlignIO.read("../aligned.aln", "clustal")
+alignment = AlignIO.read("../LC.aln", "clustal")
 entropies = [shannon_entropy(column) for column in zip(*alignment)]
-breakpoint()
 
 import matplotlib.pyplot as plt
 plt.plot(entropies)

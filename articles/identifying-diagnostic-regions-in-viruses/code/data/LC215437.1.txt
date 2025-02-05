@@ -1,0 +1,26 @@
+{
+    "organism": [
+        "Human adenovirus sp."
+    ],
+    "mol_type": [
+        "genomic DNA"
+    ],
+    "strain": [
+        "case118_20131587"
+    ],
+    "serotype": [
+        "D37"
+    ],
+    "host": [
+        "Homo sapiens 42 year old woman"
+    ],
+    "db_xref": [
+        "taxon:1907210"
+    ],
+    "geo_loc_name": [
+        "Japan:Kumamoto"
+    ],
+    "collection_date": [
+        "2014-02-17"
+    ]
+}

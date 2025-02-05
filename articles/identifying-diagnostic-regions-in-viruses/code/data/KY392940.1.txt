@@ -1,0 +1,26 @@
+{
+    "organism": [
+        "Human adenovirus sp."
+    ],
+    "mol_type": [
+        "genomic DNA"
+    ],
+    "isolate": [
+        "SB197"
+    ],
+    "host": [
+        "Homo sapiens"
+    ],
+    "db_xref": [
+        "taxon:1907210"
+    ],
+    "geo_loc_name": [
+        "Malaysia"
+    ],
+    "collection_date": [
+        "04-Oct-2013"
+    ],
+    "note": [
+        "genotype: HAdV1"
+    ]
+}

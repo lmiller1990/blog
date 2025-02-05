@@ -1,0 +1,29 @@
+{
+    "organism": [
+        "Human adenovirus sp."
+    ],
+    "mol_type": [
+        "genomic DNA"
+    ],
+    "serotype": [
+        "HAdV-C1"
+    ],
+    "isolate": [
+        "023-Duke-USA"
+    ],
+    "isolation_source": [
+        "nasal swabs/stool"
+    ],
+    "host": [
+        "Homo sapiens"
+    ],
+    "db_xref": [
+        "taxon:1907210"
+    ],
+    "geo_loc_name": [
+        "USA"
+    ],
+    "collection_date": [
+        "2004/2008"
+    ]
+}

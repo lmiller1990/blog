@@ -1,0 +1,26 @@
+{
+    "organism": [
+        "Human adenovirus sp."
+    ],
+    "mol_type": [
+        "genomic DNA"
+    ],
+    "isolate": [
+        "6361"
+    ],
+    "isolation_source": [
+        "stool sample"
+    ],
+    "db_xref": [
+        "taxon:1907210"
+    ],
+    "geo_loc_name": [
+        "Pakistan"
+    ],
+    "collection_date": [
+        "2017"
+    ],
+    "note": [
+        "genotype: D93"
+    ]
+}

@@ -1,0 +1,32 @@
+{
+    "organism": [
+        "Human adenovirus sp."
+    ],
+    "mol_type": [
+        "genomic DNA"
+    ],
+    "isolate": [
+        "Tibet/LS89/2016"
+    ],
+    "isolation_source": [
+        "throat swab"
+    ],
+    "host": [
+        "Homo sapiens"
+    ],
+    "db_xref": [
+        "taxon:1907210"
+    ],
+    "lab_host": [
+        "Hep-2"
+    ],
+    "geo_loc_name": [
+        "China"
+    ],
+    "collection_date": [
+        "26-Jan-2016"
+    ],
+    "note": [
+        "genotype: B55"
+    ]
+}

@@ -1,0 +1,26 @@
+{
+    "organism": [
+        "Human adenovirus sp."
+    ],
+    "mol_type": [
+        "genomic DNA"
+    ],
+    "isolate": [
+        "TUN/12758/HAdV-2/2015"
+    ],
+    "isolation_source": [
+        "feces"
+    ],
+    "host": [
+        "Human C2"
+    ],
+    "db_xref": [
+        "taxon:1907210"
+    ],
+    "geo_loc_name": [
+        "Tunisia"
+    ],
+    "collection_date": [
+        "2015"
+    ]
+}

@@ -1,0 +1,32 @@
+{
+    "organism": [
+        "Human adenovirus sp."
+    ],
+    "mol_type": [
+        "genomic DNA"
+    ],
+    "strain": [
+        "Hu/F-40/14062010_MO13/2010/PA/BRA"
+    ],
+    "serotype": [
+        "40"
+    ],
+    "isolate": [
+        "14062010_MO13"
+    ],
+    "isolation_source": [
+        "sewage"
+    ],
+    "host": [
+        "Homo sapiens"
+    ],
+    "db_xref": [
+        "taxon:1907210"
+    ],
+    "geo_loc_name": [
+        "Brazil"
+    ],
+    "collection_date": [
+        "14-Jun-2010"
+    ]
+}

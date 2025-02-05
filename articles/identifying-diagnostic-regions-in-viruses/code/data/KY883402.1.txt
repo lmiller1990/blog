@@ -1,0 +1,32 @@
+{
+    "organism": [
+        "Human adenovirus sp."
+    ],
+    "mol_type": [
+        "genomic DNA"
+    ],
+    "strain": [
+        "Hu/B-3/COD159-06-09-1990/1990/PA/BRA"
+    ],
+    "serotype": [
+        "3"
+    ],
+    "isolate": [
+        "COD159-06-09-1990"
+    ],
+    "isolation_source": [
+        "human feces"
+    ],
+    "host": [
+        "Homo sapiens"
+    ],
+    "db_xref": [
+        "taxon:1907210"
+    ],
+    "geo_loc_name": [
+        "Brazil"
+    ],
+    "collection_date": [
+        "06-Sep-1990"
+    ]
+}

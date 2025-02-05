@@ -1,0 +1,20 @@
+{
+    "organism": [
+        "Human adenovirus sp."
+    ],
+    "mol_type": [
+        "genomic DNA"
+    ],
+    "isolate": [
+        "P14343_GD-CHN_2014"
+    ],
+    "db_xref": [
+        "taxon:1907210"
+    ],
+    "segment": [
+        "hexon gene"
+    ],
+    "geo_loc_name": [
+        "China"
+    ]
+}

@@ -1,0 +1,35 @@
+{
+    "organism": [
+        "Human adenovirus sp."
+    ],
+    "mol_type": [
+        "genomic DNA"
+    ],
+    "serotype": [
+        "41"
+    ],
+    "isolate": [
+        "SWR9"
+    ],
+    "isolation_source": [
+        "pooled runoff from a porcine farm"
+    ],
+    "host": [
+        "Homo sapiens"
+    ],
+    "db_xref": [
+        "taxon:1907210"
+    ],
+    "geo_loc_name": [
+        "India: Ludhiana, Punjab"
+    ],
+    "lat_lon": [
+        "30.69 N 76.20 E"
+    ],
+    "collection_date": [
+        "Jun-2017"
+    ],
+    "collected_by": [
+        "Asima Zehra"
+    ]
+}

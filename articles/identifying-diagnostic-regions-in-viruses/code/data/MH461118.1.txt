@@ -1,0 +1,32 @@
+{
+    "organism": [
+        "Human adenovirus sp."
+    ],
+    "mol_type": [
+        "genomic DNA"
+    ],
+    "isolate": [
+        "JSTP"
+    ],
+    "isolation_source": [
+        "sewage sample"
+    ],
+    "host": [
+        "Homo sapiens"
+    ],
+    "db_xref": [
+        "taxon:1907210"
+    ],
+    "geo_loc_name": [
+        "India: Jallandhar, Punjab"
+    ],
+    "lat_lon": [
+        "31.36 N 75.66 E"
+    ],
+    "collection_date": [
+        "Feb-2017"
+    ],
+    "collected_by": [
+        "Asima Zehra"
+    ]
+}

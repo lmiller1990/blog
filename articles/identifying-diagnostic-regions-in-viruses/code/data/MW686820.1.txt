@@ -1,0 +1,29 @@
+{
+    "organism": [
+        "Human adenovirus sp."
+    ],
+    "mol_type": [
+        "genomic DNA"
+    ],
+    "isolate": [
+        "Pt34_S1"
+    ],
+    "isolation_source": [
+        "bronchoalveolar lavage"
+    ],
+    "host": [
+        "Homo sapiens"
+    ],
+    "db_xref": [
+        "taxon:1907210"
+    ],
+    "geo_loc_name": [
+        "United Kingdom"
+    ],
+    "collection_date": [
+        "07-Oct-2016"
+    ],
+    "note": [
+        "C89"
+    ]
+}
