@@ -1,0 +1,75 @@
+<link rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/katex@0.15.1/dist/katex.min.css"
+  integrity="sha384-R4558gYOUz8mP9YWpZJjofhk+zx0AS11p36HnD2ZKj/6JR5z27gSSULCNHIRReVs"
+  crossorigin="anonymous" />
+
+<style type="text/css">
+    .katex img {
+      object-fit: fill;
+      padding: unset;
+      display: block;
+      position: absolute;
+      width: 100%;
+      height: inherit;
+    }
+</style>
+<h1>Genomic Comparison Metrics</h1>
+<p>Average Nucleotide Identity (ANI) and Aligned Fraction (AF) are useful metrics for quantifying the similarity of genomes. This article will explain them.</p>
+<h2>Average Nucleotide Identity</h2>
+<p>This measure answers the question of "how similar are the two genomes". There are various ways to compute the ANI, since it relies on first performing a pairwise <em>alignment</em>, and there are many different alignment algorithms. Regardless, the formula is the same once you have aligned your genomes. </p>
+<p><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>A</mi><mi>N</mi><mi>I</mi><mo>=</mo><mfrac><mrow><munderover><mo>∑</mo><mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow><mi>N</mi></munderover><msub><mi>I</mi><mi>i</mi></msub></mrow><mi>N</mi></mfrac></mrow><annotation encoding="application/x-tex">
+ANI = \frac{\sum_{i=1}^{N} I_i}{N}
+</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathnormal">A</span><span class="mord mathnormal" style="margin-right:0.10903em;">N</span><span class="mord mathnormal" style="margin-right:0.07847em;">I</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:2.3569em;vertical-align:-0.686em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.6709em;"><span style="top:-2.314em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.10903em;">N</span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.6897em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mop"><span class="mop op-symbol small-op" style="position:relative;top:0em;">∑</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.9812em;"><span style="top:-2.4003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">i</span><span class="mrel mtight">=</span><span class="mord mtight">1</span></span></span></span><span style="top:-3.2029em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight" style="margin-right:0.10903em;">N</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.2997em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord"><span class="mord mathnormal" style="margin-right:0.07847em;">I</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3117em;"><span style="top:-2.55em;margin-left:-0.0785em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathnormal mtight">i</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.686em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span></span></p>
+<p>Before we use this, we must</p>
+<ol>
+<li>Obtain 2 genomes</li>
+<li>Assemble both as best you can, ideally</li>
+<li>Cut them up into fragment of <code>$N$</code> length (say 1000bp)</li>
+<li>Try out best to align the fragments from genome A to fragments from genome B</li>
+<li>Take the average all the aligned fragments above some threshold, completely ignoring unmatched fragments</li>
+</ol>
+<p>Maybe we have 5 fragments:</p>
+<table>
+<thead>
+<tr>
+<th>Fragment</th>
+<th>Identity</th>
+<th>Note</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>98%</td>
+<td></td>
+</tr>
+<tr>
+<td>2</td>
+<td>96%</td>
+<td></td>
+</tr>
+<tr>
+<td>3</td>
+<td>80%</td>
+<td></td>
+</tr>
+<tr>
+<td>4</td>
+<td>15%</td>
+<td>Discard</td>
+</tr>
+<tr>
+<td>5</td>
+<td>98%</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>Average is 93%, so the ANI is 93%.</p>
+<h2>Alignment Fraction</h2>
+<p>ANI measures <em>aligned</em> sequence identity, it does have an obvious problem -- we just completed ignored the 4th fragment! Imagine if fragments 1, 2, 3 and 5 were 100% - it would give the illusion the genomes are identical, which isn't the case.</p>
+<p>Alignment Fraction (AF) solves for this. It tells us <em>how much of the genomes aligned</em>.</p>
+<p><span class="katex-display"><span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML" display="block"><semantics><mrow><mi>A</mi><mi>F</mi><mo>=</mo><mfrac><mrow><mo>∑</mo><mtext>Aligned Length</mtext></mrow><mtext>Total Genome Length</mtext></mfrac></mrow><annotation encoding="application/x-tex">
+AF = \frac{\sum \text{Aligned Length}}{\text{Total Genome Length}}
+</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6833em;"></span><span class="mord mathnormal">A</span><span class="mord mathnormal" style="margin-right:0.13889em;">F</span><span class="mspace" style="margin-right:0.2778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2778em;"></span></span><span class="base"><span class="strut" style="height:2.3074em;vertical-align:-0.8804em;"></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.427em;"><span style="top:-2.314em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mord text"><span class="mord">Total Genome Length</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.677em;"><span class="pstrut" style="height:3em;"></span><span class="mord"><span class="mop op-symbol small-op" style="position:relative;top:0em;">∑</span><span class="mspace" style="margin-right:0.1667em;"></span><span class="mord text"><span class="mord">Aligned Length</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.8804em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span></span></p>
+<p>This woulkd work out to 80% for the above example - 4 out of the 5 fragments aligned to a high enough percentage (based on whatever threshold we choose). We don't consider how much of the sequences aligned - just the number that did.</p>
