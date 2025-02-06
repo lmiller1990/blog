@@ -148,14 +148,209 @@ Human mastadenovirus A (species, taxid: 129875, HAdV-A)
 &quot;KY002684.1&quot;
 &quot;KY002683.1
 </code></pre>
+<p>I ended up writing some python to map these to the groups (A-G). It turns out:</p>
+<p>KY =&gt; B
+MT =&gt; B
+LC =&gt; D
+MW =&gt; E</p>
 <p>Now, let's get the genomes. We can visit the direct link by going to https://www.ncbi.nlm.nih.gov/nuccore/{entry}, but we can grab them all using <a href="https://www.ncbi.nlm.nih.gov/books/NBK179288/">NCBI Entrez</a>.</p>
 <p>We can ask for the nucleotides in fasta format!</p>
 <pre><code class="language-sh">efetch -db nucleotide -id PQ164815.1 -format fasta
+
+# or, all at once:
+for acc in $(jq -r '.reports[] | select(.completeness == &quot;COMPLETE&quot;) | .accession' hadv.json)
+do
+    efetch -db nucleotide -id ${acc} -format fasta &gt; ${acc}.fasta
+done
 </code></pre>
 <p>Weirdly, the fasta files are incorrectly formatted? The first line is </p>
 <pre><code class="language-fasta">&gt;OL450401.1 Human adenovirus sp. isolate MKC_4, complete genom
 </code></pre>
-<p>Should be a space after the <code>&gt;</code>. I fixed them up, put two into a single file, and ran <code>clustalo</code>, found <a href="http://www.clustal.org/omega/">here</a>.</p>
-<pre><code class="language-sh">clustalo -i all.fasta -o aligned.aln
+<p>Should be a space after the <code>&gt;</code>. I fixed them up:</p>
+<pre><code class="language-sh">#!/bin/bash
+
+# Loop over all .fasta files in the current directory
+for file in *.fasta; do
+    # Use sed to add a space after '&gt;' if there isn't one
+    sed -i 's/^&gt;\([^ ]\)/&gt; \1/' &quot;$file&quot;
+done
 </code></pre>
-<p>TODO: find out how to identify highly convserved regions programatically.</p>
+<p>Then, put two into a single file, to run <code>clustalo</code>, found <a href="http://www.clustal.org/omega/">here</a>.</p>
+<p>Before we do, let's look at what we are dealing with:</p>
+<pre><code class="language-fasta">&gt;OL450401.1 Human adenovirus sp. isolate MKC_4, complete genome
+&gt;PQ164815.1 Human adenovirus sp. isolate HAdV-JUH23/KSA/2024, complete genome
+</code></pre>
+<p>According to NCBI, the first is Adenovirus D. The second doesn't say.</p>
+<p>Now, run <code>clustalo</code>:</p>
+<pre><code class="language-sh"># 2 sequences, about 1m on my machine
+clustalo -i all.fasta -o aligned.aln --outfmt=clustal
+</code></pre>
+<p>Doing them all will take a long time. I did 2 here. I also did all the ones starting with LC*, like this:</p>
+<pre><code class="language-sh"># 6 sequences, about 1m on my machine
+cat LC2154* &gt; LC.fasta
+clustalo -i LC.fasta -o LC.aln --outfmt=clusta
+</code></pre>
+<p>I used <code>--outfmt=clustal</code> since I found the BioPython library, which I use for the consensus sequence, doesn't work with the default output from clustalo.</p>
+<h2>Identifying Regions of Interest</h2>
+<p>Using the MSA from the two genomes above, here's some useful things we might do.</p>
+<h3>Generate a Consensus Sequence</h3>
+<p>We can generate a consensus sequencing using BioPython:</p>
+<pre><code class="language-py">from Bio import AlignIO
+from Bio.Align import AlignInfo
+
+alignment = AlignIO.read(&quot;../aligned.aln&quot;, &quot;clustal&quot;)
+
+summary_align = AlignInfo.SummaryInfo(alignment)
+consensus = summary_align.dumb_consensus()
+print(consensus) # around 38k nt
+</code></pre>
+<p>Not much use (in isolation, at least).</p>
+<h3>Shannon Entropy</h3>
+<p>We can compare N genomes from our MSA and see how conserved each position is:</p>
+<pre><code class="language-python">import numpy as np
+from collections import Counter
+from Bio import AlignIO
+
+def shannon_entropy(column):
+    counts = Counter(column)
+    freq = np.array(list(counts.values())) / sum(counts.values())
+    return -np.sum(freq * np.log2(freq))
+
+
+alignment = AlignIO.read(&quot;../aligned.aln&quot;, &quot;clustal&quot;)
+entropies = [shannon_entropy(column) for column in zip(*alignment)]
+breakpoint()
+
+import matplotlib.pyplot as plt
+plt.plot(entropies)
+plt.xlabel(&quot;Genome Pos&quot;)
+plt.ylabel(&quot;Shannon entropy&quot;)
+plt.title(&quot;Genomic Variability in Adenovirus&quot;)
+plt.show()
+</code></pre>
+<p><img alt="" src="/static/shannon.png" /></p>
+<p>Almost the entire thing is 1 - there is hardly any conserved regions. I think that's because they are two different strains of Adenovirus, which has a lot of variability.</p>
+<p>I did the same thing for the LC* samples mentioned earlier - I checked them all on NCBI, those are all Adenovirus D.</p>
+<p><img alt="" src="/static/LC_entropy.png" /></p>
+<h2>Adenovirus F</h2>
+<p>I am paricularly interested in Adenovirus F. The JSON file we got with <code>datasets</code> doesn't tell us the serotype, though. We can get some more information via the NBCI data, though, with a nifty python script:</p>
+<pre><code class="language-python">accessions = [
+    &quot;PQ605050.1&quot;,
+    # ...
+    &quot;KY002684.1&quot;,
+    &quot;KY002683.1&quot;,
+]
+
+from Bio import Entrez
+from Bio import SeqIO
+import json
+import time
+
+Entrez.email = &quot;lachlan@lachlan-miller.me&quot;
+
+def fetch_serotype(accession):
+    # don't hammer the server
+    time.sleep(0.2)
+
+    try:
+        # Fetch the GenBank record from NCBI
+        with Entrez.efetch(db=&quot;nucleotide&quot;, id=accession, rettype=&quot;gb&quot;, retmode=&quot;text&quot;) as handle:
+            record = SeqIO.read(handle, &quot;genbank&quot;)
+
+            # Search for the serotype in the features
+            for feature in record.features:
+                if feature.type == 'source':
+                    with open(f&quot;data/{accession}.txt&quot;, &quot;w&quot;) as f:
+                        if feature.qualifiers:
+                            out = json.dumps(feature.qualifiers, indent=4)
+                            print(accession, out)
+                            f.write(out)
+
+    except Exception as e:
+        print(f&quot;Error fetching {accession}: {e}&quot;)
+
+for idx, accession in enumerate(accessions):
+    print(f&quot;{idx} / {len(accessions)}&quot;)
+    fetch_serotype(accession)
+</code></pre>
+<p>We get a bunch of information, eg:</p>
+<pre><code class="language-json">{
+    &quot;organism&quot;: [
+        &quot;Human adenovirus sp.&quot;
+    ],
+    &quot;mol_type&quot;: [
+        &quot;genomic DNA&quot;
+    ],
+    &quot;strain&quot;: [
+        &quot;HAdV-F41/IAL-AD10449/2006/BRA&quot;
+    ],
+    &quot;isolate&quot;: [
+        &quot;IAL-AD10449/06&quot;
+    ],
+    &quot;isolation_source&quot;: [
+        &quot;feces&quot;
+    ],
+    &quot;host&quot;: [
+        &quot;Homo sapiens&quot;
+    ],
+    &quot;db_xref&quot;: [
+        &quot;taxon:1907210&quot;
+    ],
+    &quot;geo_loc_name&quot;: [
+        &quot;Brazil&quot;
+    ],
+    &quot;collection_date&quot;: [
+        &quot;2006&quot;
+    ],
+    &quot;note&quot;: [
+        &quot;group: F; genotype: 41&quot;
+    ]
+}
+</code></pre>
+<p>Where the <code>note</code> and <code>strain</code> tell us this is Adenovirus F. Not every dataset is as clear:</p>
+<pre><code class="language-json">{
+    &quot;organism&quot;: [
+        &quot;Human adenovirus sp.&quot;
+    ],
+    &quot;mol_type&quot;: [
+        &quot;genomic DNA&quot;
+    ],
+    &quot;strain&quot;: [
+        &quot;HAdV/S154/Huzhou/2021/CHN&quot;
+    ],
+    &quot;isolate&quot;: [
+        &quot;S2021154&quot;
+    ],
+    &quot;isolation_source&quot;: [
+        &quot;stool sample&quot;
+    ],
+    &quot;host&quot;: [
+        &quot;Homo sapiens&quot;
+    ],
+    &quot;db_xref&quot;: [
+        &quot;taxon:1907210&quot;
+    ],
+    &quot;geo_loc_name&quot;: [
+        &quot;China&quot;
+    ],
+    &quot;collection_date&quot;: [
+        &quot;17-Jun-2021&quot;
+    ]
+}
+</code></pre>
+<p>Looking closer on NCBI:</p>
+<pre><code>LOCUS       OL897264                 761 bp    DNA     linear   VRL 15-NOV-2022
+</code></pre>
+<p>It's only 761bp - can't say much with such a tiny snippet of DNA.</p>
+<p>I grabbed the nucleotides for each one with <code>genotype: F41</code>:</p>
+<pre><code class="language-sh">grep -ir &quot;genotype: F41&quot; | sed 's/\.txt:.*//' | while read id; do
+echo &quot;fetching $id...&quot;; efetch -db nucleotide -id &quot;$id&quot; -format fasta  &gt; &quot;../adenovirus_f_snippets/$id.fasta&quot;
+</code></pre>
+<p>After some more wrangling, I found a bunch of sequences around 474 nucleotides long, each one labeled</p>
+<pre><code>Human adenovirus sp. isolate TUN/20778/HAdV-41/2014 hexon gene, partial cds
+</code></pre>
+<p>Looking one of the sequences up: https://www.ncbi.nlm.nih.gov/nuccore/OP078715.1/</p>
+<p>There's plenty of information about the <a href="https://en.wikipedia.org/wiki/Hexon_protein">Adenovirus hexon gene</a>.</p>
+<p>I did a BLAST - this gene looks to be a compelling diagnostic marker for Adenovirus F (type 41).</p>
+<p><img alt="" src="/static/blast_adeno.png" /></p>
+<p><img alt="" src="/static/blast_taxa.png" /></p>

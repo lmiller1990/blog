@@ -303,13 +303,13 @@ plt.title("Genomic Variability in Adenovirus")
 plt.show()
 ```
 
-![](./shannon.png)
+![](/static/shannon.png)
 
 Almost the entire thing is 1 - there is hardly any conserved regions. I think that's because they are two different strains of Adenovirus, which has a lot of variability.
 
 I did the same thing for the LC* samples mentioned earlier - I checked them all on NCBI, those are all Adenovirus D.
 
-![](./LC_entropy.png)
+![](/static/LC_entropy.png)
 
 ## Adenovirus F
 
@@ -456,6 +456,6 @@ There's plenty of information about the [Adenovirus hexon gene](https://en.wikip
 
 I did a BLAST - this gene looks to be a compelling diagnostic marker for Adenovirus F (type 41).
 
-![](./blast_adeno.png)
+![](/static/blast_adeno.png)
 
-![](./blast_taxa.png)
+![](/static/blast_taxa.png)
