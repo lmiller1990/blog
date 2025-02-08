@@ -27,5 +27,13 @@ ANI between Adenovirus F and D: 76.6281, 19.3789
 ANI between Adenovirus F and E: 74.2882, 20.9326
 ANI between Adenovirus F and F: 98.3608, 98.6093
 ANI between Adenovirus F and G: 76.4716, 24.8242
+Comparing Adenovirus F to its cousins...
+ANI between Adenovirus F and A: 46.2533, 10.14
+ANI between Adenovirus F and B: 68.8725, 16.7455
+ANI between Adenovirus F and C: 0, 0
+ANI between Adenovirus F and D: 76.6281, 19.3789
+ANI between Adenovirus F and E: 74.2882, 20.9326
+ANI between Adenovirus F and F: 98.3608, 98.6093
+ANI between Adenovirus F and G: 76.4716, 24.8242
 ```
 
