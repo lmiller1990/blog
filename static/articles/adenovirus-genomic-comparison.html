@@ -1,4 +1,4 @@
-<h1>...</h1>
+<h1>Adenovirus Genomic Comparisons: type F vs the world</h1>
 <p>In this article we analyze various Adenovirus F genomes using the ANI (Average Nucleotide Identity) and AF (Aligned Fraction). I wrote more about those <a href="/articles/genomic-comparison-metrics">here</a>.</p>
 <p>Now, I want to answer two questions:</p>
 <ol>
@@ -47,35 +47,30 @@
 }
 </code></pre>
 <p>Nice information, but we really need the nucleotide sequence if we are going to get the ANI and AF. In this case, we do not want <code>datasets summary ...</code> but <code>datasets download ...</code>. <code>summary</code> is useful to see what we will get, and then once we are happy, <code>download</code> will get the datasets.</p>
-<h2>Running SKANI</h2>
-<p>Now we have some genomes, let's try it out:</p>
-<pre><code class="language-sh">skani dist GCA_000846685.1/GCA_000846685.1_ViralProj14487_genomic.fna GCA_006402115.1/GCA_006402115.1_ASM640211v1_genomic.fna
-skani dist  GCA_000846685.1/GCA_000846685.1_ViralProj14487_genomic.fna GCA_006402115.1/GCA_006402115.1_ASM640211v1_genomic.fna | cut -f3-5 | ./md.sh
+<p>Download the data:</p>
+<pre><code class="language-sh">#! /usr/bin/zsh
+mkdir data
+
+for g in {a,b,c,d,e,f,g}; do
+        datasets download genome taxon &quot;human mastadenovirus $g&quot; --assembly-level complete --filename &quot;hadv_$g.zip&quot;
+        mkdir &quot;data/hadv_$g&quot;
+        unzip &quot;hadv_$g.zip&quot; -d &quot;data/hadv_$g&quot;
+done
+
+rm *.zip
 </code></pre>
-<table>
-<thead>
-<tr>
-<th>ANI</th>
-<th>Align_fraction_ref</th>
-<th>Align_fraction_query</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>83.51</td>
-<td>33.04</td>
-<td>32.96</td>
-</tr>
-</tbody>
-</table>
-<p>So, in this example, ANI is around 83% - lots of similar nucleotides, as expected. Compared to something like two human, though, this is very low! In the wild west of virus genomics, not so much. The AF is only 33% - this suggests <em>most</em> of the genomes were not aligned. This could be explain by:</p>
-<ul>
-<li>large divergence, even within the species</li>
-<li>lots of rearrangement / duplication / insertions</li>
-<li>Adenovirus F tend to be not that similar, despite all falling undre the Adenovirus F group.</li>
-</ul>
-<p>ANI and AF can be tuned using some parameters. Out of the box, skani works well for larger genomes, like bacteria.</p>
-<p>It turns out you can do</p>
+<p>In addition, rename the <code>fna</code> header to be a bit nicer:</p>
+<pre><code class="language-sh">#! /usr/bin/zsh
+
+for dir in $(ls data); do
+        find &quot;data/$dir&quot; -type f -name &quot;*.fna&quot; | while read -r fna_file; do
+                echo &quot;$fna_file -&gt; $dir&quot;
+                sed -i &quot;1s/.*/&gt;$dir/&quot; &quot;$fna_file&quot;
+        done
+done
+</code></pre>
+<h2>Running SKANI</h2>
+<p>Now we have some genomes, let's try it out. The default parameters are for larger genomes, so we need to tweak them:</p>
 <blockquote>
 <p><em>Since v0.2.2, skani has the --small-genomes option equivalent to -c 30 -m 200 --faster-small.</em></p>
 </blockquote>
@@ -90,28 +85,17 @@ skani dist  GCA_000846685.1/GCA_000846685.1_ViralProj14487_genomic.fna GCA_00640
 </code></pre>
 <p>Imagine a genome like a book you are scanning. A higher <code>-c</code> value would be like scanning for important words - good, fast, but you might miss details. A small <code>-c</code> would be like reading every word - more accurate but also much more computationally expensive.</p>
 <p>For large genomes (bacteria, eukaryotes) using a low <code>-c</code> value is prohibitively expensive. For a virus, though, not so much!</p>
-<p>Using the new <code>--small-genomes</code> flag:</p>
-<pre><code>| ANI | Align_fraction_ref | Align_fraction_query |
-| --- |  --- |  --- |
-| 89.30 | 89.55 | 89.35 |
+<p>Using the new <code>-c</code> flag:</p>
+<pre><code>skani dist -c 20 data/hadv_a/ncbi_dataset/data/GCA_000846805.1/GCA_000846805.1_ViralProj14517_genomic.fna data/hadv_a/ncbi_dataset/data/GCA_006415435.1/GCA_006415435.1_ASM641543v1_genomic.fna | cut -f3-
 </code></pre>
-<p>We now see the AF is much higher. This is likely a more accurate representation, and what we'd expect from two organisms supposedly closely related (same species).</p>
+<p>We get:</p>
+<pre><code>Align_fraction_ref    Align_fraction_query     Ref_name        Query_name
+
+98.73   99.71   98.40   hadv_a  hadv_a
+</code></pre>
+<p>This is what we'd expect from two organisms supposedly closely related (same species).</p>
 <p>How about the same comparison, but for the other types of Adenovirus?</p>
-<p>First, we need some genomes:</p>
-<pre><code>for i in {a,b,c,d,e,f,g}; do
-        datasets download genome taxon &quot;human mastadenovirus $i&quot; --assembly-level complete --filename &quot;human_mastadenovirus_$i.zip&quot;
-        echo &quot;Got human-mastadenovirus_$i.zip&quot;
-        du -h &quot;human_mastadenovirus_$i.zip&quot;
-done
-</code></pre>
-<p>Unzip them</p>
-<pre><code>for zip in human_mastadenovirus_*; do 
-        OUT=$(echo $zip | cut -d '.' -f 1); unzip $zip -d $OUT; 
-done
-</code></pre>
-<p>Now, run the same comparison:</p>
-<pre><code class="language-sh">#!/bin/bash
-shopt -s globstar  # Enable recursive globbing in Bash
+<pre><code class="language-sh">#! /usr/bin/zsh
 
 function average_ani {
         awk '{ sum1 += $3; sum2 += $4; count++ } 
@@ -122,9 +106,10 @@ function average_ani {
 }
 
 for g in {a,b,c,d,e,f,g}; do
-        files=(human_mastadenovirus_&quot;$g&quot;/**/*.fna)
+        files=(&quot;data/hadv_$g&quot;/**/*.fna)
 
-        read ani1 ani2 &lt; &lt;(skani dist --small-genomes &quot;${files[@]}&quot; | average_ani)
+        # read ani1 ani2 &lt; &lt;(skani dist --small-genomes &quot;${files[@]}&quot; | average_ani)
+        read ani1 ani2 &lt; &lt;(skani dist -c 20 &quot;${files[@]}&quot; | average_ani)
         echo &quot;Adenovirus $g ANI / AF: $ani1, $ani2&quot;
 done
 </code></pre>
@@ -139,58 +124,7 @@ Adenovirus G ANI / AF: 90.3919, 90.0256
 </code></pre>
 <h2>Adenovirus F vs Others</h2>
 <p>Now we can do the same thing, but see how Adenovirus F compares to the rest, one by one, using <code>-q</code> (query) and <code>-r</code> (reference):</p>
-<pre><code class="language-sh">target=&quot;f&quot;
-cousins=(a b c d e f g)
-
-echo &quot;Comparing Adenovirus $target to its cousins...&quot;
-
-for cousin in &quot;${cousins[@]}&quot;; do
-    files_target=(human_mastadenovirus_&quot;$target&quot;/**/*.fna)
-    files_cousin=(human_mastadenovirus_&quot;$cousin&quot;/**/*.fna)
-
-    # Ensure both sets of files exist before running skani
-    read ani1 ani2 &lt; &lt;(skani dist --small-genomes &quot;${files_target[@]}&quot; &quot;${files_cousin[@]}&quot; | average_ani)
-    echo &quot;ANI between Adenovirus $target and $cousin: $ani1, $ani2&quot;
-done
-</code></pre>
-<p>We get:</p>
-<p>Comparing Adenovirus f to its cousins...</p>
-<ul>
-<li>ANI between Adenovirus f and a: 0, 0</li>
-<li>ANI between Adenovirus f and b: 0, 0</li>
-<li>ANI between Adenovirus f and c: 0, 0</li>
-<li>ANI between Adenovirus f and d: 0, 0</li>
-<li>ANI between Adenovirus f and e: 0, 0</li>
-<li>ANI between Adenovirus f and f: 98.196, 98.3431</li>
-<li>ANI between Adenovirus f and g: 0, 0</li>
-</ul>
-<p>Everything except the identity comparison is 0. This suggests each Adenovirus group has very little in common, as per the skani docs:</p>
-<blockquote>
-<p>If the resulting aligned fraction for the two genomes is &lt; 15%, no output is given.</p>
-<p>In practice, this means that only results with &gt; ~82% ANI are reliably output (with default parameters). See the skani advanced usage guide for information on how to compare lower ANI genomes.</p>
-</blockquote>
-<p>I looked into advanced usage, it recommends lowering <code>-c</code> and <code>-s</code>.</p>
-<pre><code>-c &lt;c&gt; Compression factor (k-mer subsampling rate).       
-        [default: 125]
--s &lt;s&gt; Screen out pairs with *approximately* &lt; % identity using k-mer sketching. 
-        [default: 80]
-</code></pre>
-<h2>What do these mean?</h2>
-<p><code>-s</code> is the screening ANI threshold. This means skani will only proceed if "kmer similarity estimate" is <strong>greater than</strong> <code>-s</code>. Default is 80: only genomes with &gt;=80% similarity are compared. So, we might need this to be lower to be more lenient.</p>
-<ul>
-<li>if <code>-s</code> too high: miss genomes that are pretty similar</li>
-<li>if <code>-s</code> too low: get poor matches that aren't similar
-I tried a few different numbers. Eventually, <code>-c 20</code> seems better.</li>
-</ul>
-<p><code>-c</code> is the kmer compression factor. Default is 125. Imagine you are comparing two songs. <code>-c</code> controls how many notes you listen to before deciding if the songs are similar.</p>
-<ul>
-<li>if -c is high (eg: 200), you listen to only a few key notes (faster, but risk missing differences).</li>
-<li>if -c is low (eg: 30), you listen to every note (slower but more detailed comparison)</li>
-</ul>
-<p>Updated parameters:</p>
-<pre><code class="language-sh">#!/bin/bash
-shopt -s globstar  # Enable recursive globbing in Bash
-
+<pre><code class="language-sh">#!/usr/bin/zsh
 function average_ani {
         awk '{ sum1 += $3; sum2 += $4; count++ } 
         END { 
@@ -205,96 +139,23 @@ cousins=(a b c d e f g)
 echo &quot;Comparing Adenovirus $target to its cousins...&quot;
 
 for cousin in &quot;${cousins[@]}&quot;; do
-    files_target=(human_mastadenovirus_&quot;$target&quot;/**/*.fna)
-    files_cousin=(human_mastadenovirus_&quot;$cousin&quot;/**/*.fna)
+    files_target=(&quot;data/hadv_$target&quot;/**/*.fna)
+    files_cousin=(&quot;data/hadv_$cousin&quot;/**/*.fna)
     # NOTE we use -c 20
     read ani1 ani2 &lt; &lt;(skani dist -q &quot;${files_target[@]}&quot; -r &quot;${files_cousin[@]}&quot; -c 20 | average_ani)
     echo &quot;ANI between Adenovirus $target and $cousin: $ani1, $ani2&quot;
 done
 </code></pre>
-<p>Now we get:</p>
+<p>We get:</p>
 <p>Comparing Adenovirus f to its cousins...</p>
 <ul>
-<li>ANI between Adenovirus f and a: 46.2533, 10.14</li>
-<li>ANI between Adenovirus f and b: 68.8725, 16.7455</li>
-<li>ANI between Adenovirus f and c: 0, 0</li>
-<li>ANI between Adenovirus f and d: 76.6281, 19.3789</li>
-<li>ANI between Adenovirus f and e: 74.2882, 20.9326</li>
-<li>ANI between Adenovirus f and f: 98.3608, 98.6093</li>
-<li>ANI between Adenovirus f and g: 76.4716, 24.8242</li>
+<li>ANI between Adenovirus F and A: 46.2533, 10.14</li>
+<li>ANI between Adenovirus F and B: 68.8725, 16.7455</li>
+<li>ANI between Adenovirus F and C: 0, 0</li>
+<li>ANI between Adenovirus F and D: 76.6281, 19.3789</li>
+<li>ANI between Adenovirus F and E: 74.2882, 20.9326</li>
+<li>ANI between Adenovirus F and F: 98.3608, 98.6093</li>
+<li>ANI between Adenovirus F and G: 76.4716, 24.8242</li>
 </ul>
-<p>There are some variants that are closer to Adenovirus F, such as D, E and G, in terms of ANI. The AF is very far apart. I'm interested in identitying in metagenomic data, though, so the ANI is probably the more important metric to focus on. Ideally, we want to find some unique loci that are only found in Adenovirus F, and no other Adenoviruses, and ideally, no other organisms.</p>
-<h2>General Comparison</h2>
-<p>We can use skani's <code>triangle</code> function to calculate the distance from "the rest". <code>dist</code> vs <code>triangle</code> can be described like this:</p>
-<ul>
-<li>How different is Adenovirus F from a SPECIFIC group? → Use skani dist (we did this)</li>
-<li>How different is Adenovirus F from ALL other adenoviruses? → Use skani triangle (now)</li>
-</ul>
-<p>To show what triangle does, here is an example running <code>triangle</code> against 1 genome from each group:</p>
-<pre><code>#!/usr/bin/zsh
-
-# select one representative genome per Adenovirus group
-declare -A representatives
-
-for group in {a,b,c,d,e,f,g}; do
-    # Find the first .fna file in the group directory
-    genome_file=(human_mastadenovirus_&quot;$group&quot;/**/*.fna(om[1]))
-    representatives[$group]=&quot;$genome_file&quot;
-done
-
-# run skani triangle only on the selected genomes
-skani triangle -c 15 -s 40 --min-af 5 &quot;${representatives[@]}&quot; -o adenovirus_ani_matrix.txt
-</code></pre>
-<p>This gives us:</p>
-<pre><code>7
-human_mastadenovirus_a
-human_mastadenovirus_b  0.00
-human_mastadenovirus_c  0.00    0.00
-human_mastadenovirus_d  0.00    0.00    0.00
-human_mastadenovirus_e  0.00    85.13   0.00    0.00
-human_mastadenovirus_f  0.00    0.00    0.00    0.00    0.00
-human_mastadenovirus_g  0.00    0.00    0.00    0.00    0.00    0.00
-</code></pre>
-<p>This shows the ANI for each pair. So the first 0.00 is the ANI when comparing <code>human_mastadenovirus_b</code> and <code>human_mastadenovirus_a</code>. Only one entry is non-zero - B and E.</p>
-<p>We can confirm this using <code>dist</code></p>
-<pre><code class="language-sh">$ skani dist -c 15 -s 40 human_mastadenovirus_b/.../GCA_006446875.1_ASM644687v1_genomic.fna human_mastadenovirus_e/.../GCA_023119645.1_ASM2311964v1_genomic.fna
-ANI     Align_fraction_ref
-85.13   78.19
-</code></pre>
-<p><code>skani triangle</code> is basically a way to do a lot of <code>skani dist</code> all at once.</p>
-<p>Before we go further, let's update the <code>fna</code> files to have a more readable header. We will show the Adenovirus group in the header:</p>
-<pre><code class="language-sh">#! /usr/bin/zsh
-
-for dir in $(ls); do
-        echo $i
-        find &quot;$dir&quot; -type f -name &quot;*.fna&quot; | while read -r fna_file; do
-                echo &quot;$fna_file -&gt; $dir&quot;
-                sed -i &quot;1s/.*/&gt;$dir/&quot; &quot;$fna_file&quot;
-        done
-done
-</code></pre>
-<p>I ran <code>triangle</code> on the 3 genomes from each group:</p>
-<pre><code class="language-sh">21
-human_mastadenovirus_a
-human_mastadenovirus_a  99.98
-human_mastadenovirus_a  99.54   99.60
-human_mastadenovirus_b  0.00    0.00    0.00
-human_mastadenovirus_b  0.00    0.00    0.00    0.00
-human_mastadenovirus_b  0.00    0.00    0.00    0.00    99.39
-human_mastadenovirus_c  0.00    0.00    0.00    0.00    0.00    0.00
-human_mastadenovirus_c  0.00    0.00    0.00    0.00    0.00    0.00    99.62
-human_mastadenovirus_c  0.00    0.00    0.00    0.00    0.00    0.00    97.66   97.59
-human_mastadenovirus_d  0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00
-human_mastadenovirus_d  0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    97.10
-human_mastadenovirus_d  0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    93.65   93.90
-human_mastadenovirus_e  0.00    0.00    0.00    83.17   0.00    0.00    0.00    0.00    0.00    82.22   81.92   81.16
-human_mastadenovirus_e  0.00    0.00    0.00    83.21   0.00    0.00    0.00    0.00    0.00    82.18   81.88   81.11   99.87
-human_mastadenovirus_e  0.00    0.00    0.00    84.69   0.00    0.00    0.00    0.00    0.00    83.01   82.54   0.00    96.29   96.32
-human_mastadenovirus_f  0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00
-human_mastadenovirus_f  0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    99.93
-human_mastadenovirus_f  0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    99.81   99.79
-human_mastadenovirus_g  0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00
-human_mastadenovirus_g  0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00
-human_mastadenovirus_g  0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    0.00    92.35   99.18
-</code></pre>
-<p>Looks like B and E might have something in common... but it's still mostly 0s. I ran <code>triangle</code> on the entire dataset - all 0s. I think we can reasonly deduce that Adenoviruses are fairly different from each other.</p>
+<p>There are some variants that are closer to Adenovirus F, such as D, E and G, in terms of ANI. The AF is very far apart. I'm interested in identifying in metagenomic data, though, so the ANI is probably the more important metric to focus on. Ideally, we want to find some unique loci that are only found in Adenovirus F, and no other Adenoviruses, and ideally, no other organisms.</p>
+<p>Adenovirus F is quite distinct from the other adenovirus species. We should be able to find some way to identify it uniquely within some genomic data.</p>

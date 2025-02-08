@@ -5,7 +5,7 @@ description: TODO
 image: https://images.unsplash.com/photo-1637929476734-bd7f5f78e40a
 +++
 
-# ...
+# Adenovirus Genomic Comparisons: type F vs the world
 
 In this article we analyze various Adenovirus F genomes using the ANI (Average Nucleotide Identity) and AF (Aligned Fraction). I wrote more about those [here](/articles/genomic-comparison-metrics).
 
