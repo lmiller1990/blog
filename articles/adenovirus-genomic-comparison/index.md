@@ -1,7 +1,7 @@
 +++
 title: Adenovirus Genomic Comparisons
 published: 2025-02-06
-description: TODO
+description: In this article we analyze various Adenovirus F vs other Adenoviruses using the ANI (Average Nucleotide Identity) and AF (Aligned Fraction).
 image: https://images.unsplash.com/photo-1637929476734-bd7f5f78e40a
 +++
 
