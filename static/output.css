@@ -595,6 +595,19 @@ p > a, li > a {
   text-decoration-line: underline;
 }
 
+table {
+  width: 100%;
+}
+
+td, th {
+  padding: 0.5rem;
+  text-align: left;
+}
+
+th, td {
+  border-width: 2px;
+}
+
 .ml-8 {
   margin-left: 2rem;
 }
@@ -617,6 +630,10 @@ p > a, li > a {
 
 .flex {
   display: flex;
+}
+
+.table {
+  display: table;
 }
 
 .hidden {

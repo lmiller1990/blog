@@ -121,11 +121,9 @@ skani dist -c 20 data/hadv_a/ncbi_dataset/data/GCA_000846805.1/GCA_000846805.1_V
 
 We get:
 
-```
-Align_fraction_ref    Align_fraction_query     Ref_name        Query_name
-
-98.73   99.71   98.40   hadv_a  hadv_a
-```
+| Align_fraction_ref | Align_fraction_query | Ref_name | Query_name |
+|--------------------|----------------------|----------|------------|
+| 98.73              | 99.71                | hadv_a   |   hadv_a   |
 
 This is what we'd expect from two organisms supposedly closely related (same species).
 
@@ -154,15 +152,17 @@ done
 
 Mostly what you'd expect:
 
-```
-Adenovirus A ANI / AF: 88.7894, 92.0555
-Adenovirus B ANI / AF: 89.3602, 91.8232
-Adenovirus C ANI / AF: 96.886, 94.7767
-Adenovirus D ANI / AF: 96.1763, 98.8405
-Adenovirus E ANI / AF: 94.1114, 95.3837
-Adenovirus F ANI / AF: 89.541, 89.4118
-Adenovirus G ANI / AF: 90.3919, 90.0256
-```
+
+| Adenovirus Type | ANI (%) | AF (%) |
+|----------------|--------|--------|
+| A             | 88.79  | 92.06  |
+| B             | 89.36  | 91.82  |
+| C             | 96.89  | 94.78  |
+| D             | 96.18  | 98.84  |
+| E             | 94.11  | 95.38  |
+| F             | 89.54  | 89.41  |
+| G             | 90.39  | 90.03  |
+
 
 ## Adenovirus F vs Others
 
@@ -196,13 +196,16 @@ We get:
 
 Comparing Adenovirus f to its cousins...
 
-- ANI between Adenovirus F and A: 46.2533, 10.14
-- ANI between Adenovirus F and B: 68.8725, 16.7455
-- ANI between Adenovirus F and C: 0, 0
-- ANI between Adenovirus F and D: 76.6281, 19.3789
-- ANI between Adenovirus F and E: 74.2882, 20.9326
-- ANI between Adenovirus F and F: 98.3608, 98.6093
-- ANI between Adenovirus F and G: 76.4716, 24.8242
+| Comparison                  | ANI (%)  | Secondary Value |
+|-----------------------------|---------|----------------|
+| Adenovirus F vs A           | 46.2533 | 10.14          |
+| Adenovirus F vs B           | 68.8725 | 16.7455        |
+| Adenovirus F vs C           | 0       | 0              |
+| Adenovirus F vs D           | 76.6281 | 19.3789        |
+| Adenovirus F vs E           | 74.2882 | 20.9326        |
+| Adenovirus F vs F           | 98.3608 | 98.6093        |
+| Adenovirus F vs G           | 76.4716 | 24.8242        |
+
 
 There are some variants that are closer to Adenovirus F, such as D, E and G, in terms of ANI. The AF is very far apart. I'm interested in identifying in metagenomic data, though, so the ANI is probably the more important metric to focus on. Ideally, we want to find some unique loci that are only found in Adenovirus F, and no other Adenoviruses, and ideally, no other organisms.
 

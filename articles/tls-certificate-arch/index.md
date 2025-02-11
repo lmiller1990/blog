@@ -26,7 +26,7 @@ Next, place your certificate in `/etc/ca-certificates/trust-sources/anchors`
 
 ```sh
 sudo cp your-root-ca.crt /etc/ca-certificates/trust-source/anchors/
-``
+```
 
 And update the trusted certificates using:
 

@@ -89,10 +89,24 @@ done
 <pre><code>skani dist -c 20 data/hadv_a/ncbi_dataset/data/GCA_000846805.1/GCA_000846805.1_ViralProj14517_genomic.fna data/hadv_a/ncbi_dataset/data/GCA_006415435.1/GCA_006415435.1_ASM641543v1_genomic.fna | cut -f3-
 </code></pre>
 <p>We get:</p>
-<pre><code>Align_fraction_ref    Align_fraction_query     Ref_name        Query_name
-
-98.73   99.71   98.40   hadv_a  hadv_a
-</code></pre>
+<table>
+<thead>
+<tr>
+<th>Align_fraction_ref</th>
+<th>Align_fraction_query</th>
+<th>Ref_name</th>
+<th>Query_name</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>98.73</td>
+<td>99.71</td>
+<td>hadv_a</td>
+<td>hadv_a</td>
+</tr>
+</tbody>
+</table>
 <p>This is what we'd expect from two organisms supposedly closely related (same species).</p>
 <p>How about the same comparison, but for the other types of Adenovirus?</p>
 <pre><code class="language-sh">#! /usr/bin/zsh
@@ -114,14 +128,52 @@ for g in {a,b,c,d,e,f,g}; do
 done
 </code></pre>
 <p>Mostly what you'd expect:</p>
-<pre><code>Adenovirus A ANI / AF: 88.7894, 92.0555
-Adenovirus B ANI / AF: 89.3602, 91.8232
-Adenovirus C ANI / AF: 96.886, 94.7767
-Adenovirus D ANI / AF: 96.1763, 98.8405
-Adenovirus E ANI / AF: 94.1114, 95.3837
-Adenovirus F ANI / AF: 89.541, 89.4118
-Adenovirus G ANI / AF: 90.3919, 90.0256
-</code></pre>
+<table>
+<thead>
+<tr>
+<th>Adenovirus Type</th>
+<th>ANI (%)</th>
+<th>AF (%)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A</td>
+<td>88.79</td>
+<td>92.06</td>
+</tr>
+<tr>
+<td>B</td>
+<td>89.36</td>
+<td>91.82</td>
+</tr>
+<tr>
+<td>C</td>
+<td>96.89</td>
+<td>94.78</td>
+</tr>
+<tr>
+<td>D</td>
+<td>96.18</td>
+<td>98.84</td>
+</tr>
+<tr>
+<td>E</td>
+<td>94.11</td>
+<td>95.38</td>
+</tr>
+<tr>
+<td>F</td>
+<td>89.54</td>
+<td>89.41</td>
+</tr>
+<tr>
+<td>G</td>
+<td>90.39</td>
+<td>90.03</td>
+</tr>
+</tbody>
+</table>
 <h2>Adenovirus F vs Others</h2>
 <p>Now we can do the same thing, but see how Adenovirus F compares to the rest, one by one, using <code>-q</code> (query) and <code>-r</code> (reference):</p>
 <pre><code class="language-sh">#!/usr/bin/zsh
@@ -148,14 +200,51 @@ done
 </code></pre>
 <p>We get:</p>
 <p>Comparing Adenovirus f to its cousins...</p>
-<ul>
-<li>ANI between Adenovirus F and A: 46.2533, 10.14</li>
-<li>ANI between Adenovirus F and B: 68.8725, 16.7455</li>
-<li>ANI between Adenovirus F and C: 0, 0</li>
-<li>ANI between Adenovirus F and D: 76.6281, 19.3789</li>
-<li>ANI between Adenovirus F and E: 74.2882, 20.9326</li>
-<li>ANI between Adenovirus F and F: 98.3608, 98.6093</li>
-<li>ANI between Adenovirus F and G: 76.4716, 24.8242</li>
-</ul>
+<table>
+<thead>
+<tr>
+<th>Comparison</th>
+<th>ANI (%)</th>
+<th>Secondary Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Adenovirus F vs A</td>
+<td>46.2533</td>
+<td>10.14</td>
+</tr>
+<tr>
+<td>Adenovirus F vs B</td>
+<td>68.8725</td>
+<td>16.7455</td>
+</tr>
+<tr>
+<td>Adenovirus F vs C</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr>
+<td>Adenovirus F vs D</td>
+<td>76.6281</td>
+<td>19.3789</td>
+</tr>
+<tr>
+<td>Adenovirus F vs E</td>
+<td>74.2882</td>
+<td>20.9326</td>
+</tr>
+<tr>
+<td>Adenovirus F vs F</td>
+<td>98.3608</td>
+<td>98.6093</td>
+</tr>
+<tr>
+<td>Adenovirus F vs G</td>
+<td>76.4716</td>
+<td>24.8242</td>
+</tr>
+</tbody>
+</table>
 <p>There are some variants that are closer to Adenovirus F, such as D, E and G, in terms of ANI. The AF is very far apart. I'm interested in identifying in metagenomic data, though, so the ANI is probably the more important metric to focus on. Ideally, we want to find some unique loci that are only found in Adenovirus F, and no other Adenoviruses, and ideally, no other organisms.</p>
 <p>Adenovirus F is quite distinct from the other adenovirus species. We should be able to find some way to identify it uniquely within some genomic data.</p>

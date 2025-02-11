@@ -10,12 +10,9 @@ sudo update-ca-certificates
 </code></pre>
 <p>Next, place your certificate in <code>/etc/ca-certificates/trust-sources/anchors</code></p>
 <pre><code class="language-sh">sudo cp your-root-ca.crt /etc/ca-certificates/trust-source/anchors/
-``
-
-And update the trusted certificates using:
-
-```sh
-sudo update-ca-trust
+</code></pre>
+<p>And update the trusted certificates using:</p>
+<pre><code class="language-sh">sudo update-ca-trust
 </code></pre>
 <p>Finally, run <code>trust list</code> and you should see your certificate there.</p>
 <h2>Allow IPv4 Forwarding</h2>

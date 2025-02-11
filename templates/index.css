@@ -2,7 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-
 @layer base {
   h1 {
     @apply text-2xl;
@@ -35,4 +34,17 @@
   p > a, li > a {
     @apply underline cursor-pointer;
   }
+  
+  table {
+          @apply w-full;
+  }
+
+  td, th { 
+    @apply p-2 text-left;
+  }
+  
+  th, td {
+          @apply border-2;
+  }
+
 }
