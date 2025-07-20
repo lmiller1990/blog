@@ -1,0 +1,22 @@
+<h1>Gene Calling in Viruses</h1>
+<p><em>Gene Calling</em> is a fancy way of saying "this region of DNA corresponds to a gene". This is usually done with computational models, using heuristics such as:</p>
+<ul>
+<li>open reading frames (ORFs)</li>
+<li>start / stop codons</li>
+<li>ribosome binding sites</li>
+<li>etc</li>
+</ul>
+<p>Doing so in viruses is particularly tricky for many reasons, one of which is <strong>overlapping ORFs</strong>. For example, you might have a DNA strand:</p>
+<pre><code>AUG AAT AUG GAG ATG UGA UAA
+
+AUG AAT AUG GAG ATG UGA
+^^^                 ^^^
+start               end 
+
+**OR**
+
+AUG AAT AUG GAG ATG UGA UAA
+    ^^^                 ^^^
+    start               end 
+</code></pre>
+<p>Both are valid ORFs, depending where transcription starts. Viruses pack a whole lot into their genome. They are very efficient.</p>
