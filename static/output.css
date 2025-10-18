@@ -564,7 +564,12 @@ h2 {
   line-height: 1.75rem;
 }
 
-p, ul {
+h3 {
+  font-size: 1.125rem;
+  line-height: 1.75rem;
+}
+
+p, ul, h1, h2, h3, table {
   margin-top: 0.5rem;
   margin-bottom: 0.5rem;
 }

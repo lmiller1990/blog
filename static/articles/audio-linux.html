@@ -1,0 +1,27 @@
+<p>Some quick notes.</p>
+<h1>ALSA &amp; Device Inspection</h1>
+<p>pactl list sources short
+    Lists audio sources PipeWire/PulseAudio sees.</p>
+<p>arecord -l
+    Lists available capture hardware devices at the ALSA level.</p>
+<p>aplay -l
+    Lists available playback hardware devices at the ALSA level.</p>
+<p>arecord -D hw:X,Y -f cd -d 5 test.wav
+    Records 5 seconds directly from a specific ALSA device to test the mic.</p>
+<p>aplay test.wav
+    Plays back the test recording.</p>
+<h1>Volume &amp; Input Control</h1>
+<p>alsamixer -c N
+    Opens ALSA mixer for a specific card to unmute/raise “Mic,” “Front Mic,” “Capture,” and “Mic Boost” sliders.</p>
+<p>(Spacebar in alsamixer Capture view)
+    Selects the correct capture source (Front Mic vs. Rear Mic).</p>
+<h1>Service &amp; Config Resets</h1>
+<p>systemctl --user restart pipewire pipewire-pulse wireplumber
+    Restarts PipeWire and its PulseAudio compatibility layer to refresh routing.</p>
+<p>rm -rf ~/.config/pulse ~/.config/pipewire ~/.local/state/wireplumber
+    Deletes per-user configuration to reset audio settings.</p>
+<p>sudo pacman -Syu alsa-utils pipewire pipewire-pulse wireplumber
+    Reinstalls and updates the audio stack packages.</p>
+<h1>Kernel Module Tweaks</h1>
+<p>sudo nano /etc/modprobe.d/alsa-base.conf
+    Removes or adds snd-hda-intel model overrides to reset driver pin mappings.</p>

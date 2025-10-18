@@ -11,7 +11,11 @@
     @apply text-xl;
   }
 
-  p, ul {
+  h3 {
+    @apply text-lg;
+  }
+
+  p, ul, h1, h2, h3, table {
     @apply my-2;
   }
 
