@@ -64,6 +64,11 @@ def read_article(request: Request, slug: str):
         print(err)
 
 
+@app.get("/resume", response_class=HTMLResponse)
+def resume(request: Request):
+    return templates.TemplateResponse(request=request, name="resume.html")
+
+
 @app.get("/musings/{slug}", response_class=HTMLResponse)
 def read_musings(request: Request, slug: str):
     try:
