@@ -44,7 +44,10 @@ async function main() {
     await waitForServer(BASE_URL);
 
     console.log('Launching browser...');
-    const browser = await puppeteer.launch({ headless: true });
+    const browser = await puppeteer.launch({
+      headless: true,
+      args: ['--no-sandbox', '--disable-setuid-sandbox'],
+    });
     const page = await browser.newPage();
 
     await page.goto(`${BASE_URL}/resume`, { waitUntil: 'networkidle0' });
