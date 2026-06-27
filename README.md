@@ -10,47 +10,49 @@ npm install
 
 Docker:
 
-``sh
-./scripts/build-and-docker.sh.
-docker run --rm -p 7777:8080 lachlanmillerdev/blog:latest
+```sh
+docker build -t blog:latest .
+docker run --rm -p 7777:7777 blog:latest
 ```
 
-systemd:
+Optionally skip PDF generation during build:
+
+```sh
+docker build --build-arg SKIP_PDF=true -t blog:latest .
+```
+
+systemd (`/etc/systemd/system/fastapi.service`):
 
 ```
 [Unit]
-Description=FastAPI app (uv + FastAPI)
-After=network.target
+Description=Blog app (Docker)
+After=network.target docker.service
+Requires=docker.service
 
 [Service]
 Type=simple
 User=lachlan
-WorkingDirectory=/opt/apps/blog
-ExecStart=/home/lachlan/.local/bin/uv run fastapi run server.py --port 7777
 Restart=always
 RestartSec=5
-Environment=PYTHONUNBUFFERED=1
+ExecStartPre=-/usr/bin/docker stop fastapi
+ExecStartPre=-/usr/bin/docker rm fastapi
+ExecStart=/usr/bin/docker run --rm --name fastapi \
+  -p 7777:7777 \
+  -v /opt/apps/blog:/app \
+  blog:latest
+ExecStop=/usr/bin/docker stop fastapi
 
 [Install]
 WantedBy=multi-user.target
 ```
 
-In `/etc/systemd/system/fastapi.service`
-
-```
+```sh
 sudo systemctl daemon-reexec
 sudo systemctl daemon-reload
 sudo systemctl enable fastapi
 sudo systemctl start fastapi
 
-###
-
-sudo systemctl daemon-reexec
-sudo systemctl daemon-reload
-sudo systemctl restart fastapi
-
-### 
-
+# status / logs
 systemctl status fastapi
 journalctl -u fastapi -f
 ```
