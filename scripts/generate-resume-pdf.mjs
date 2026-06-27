@@ -10,7 +10,7 @@ const projectDir = path.resolve(__dirname, '..');
 const PORT = 7778;
 const BASE_URL = `http://localhost:${PORT}`;
 
-function waitForServer(url, timeout = 30000) {
+function waitForServer(url, timeout = 60000) {
   const start = Date.now();
   return new Promise((resolve, reject) => {
     const check = async () => {
@@ -34,7 +34,7 @@ async function main() {
   console.log('Starting dev server...');
   const server = spawn(
     'uv',
-    ['run', 'fastapi', 'dev', 'server.py', '--port', String(PORT)],
+    ['run', 'fastapi', 'run', 'server.py', '--port', String(PORT)],
     { cwd: projectDir, stdio: 'pipe', env: { ...process.env } }
   );
 

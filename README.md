@@ -11,12 +11,11 @@ Docker:
 
 ``sh
 docker buildx build \
-  --platform linux/arm64 \
+  --platform linux/amd64 \
   --load \
-  -t blog:latest \
-  .
+  -t lachlanmillerdev/blog .
 
-docker run --rm -p 7777:8080 blog:latest
+docker run --rm -p 7777:8080 lachlanmillerdev/blog:latest
 ```
 
 systemd:
