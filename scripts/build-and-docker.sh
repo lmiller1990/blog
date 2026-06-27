@@ -12,3 +12,6 @@ docker buildx build \
   --platform linux/amd64 \
   --load \
   -t lachlanmillerdev/blog .
+
+
+docker push lachlanmillerdev/blog 

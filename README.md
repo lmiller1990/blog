@@ -5,16 +5,13 @@ A simple static site generator written in python for my own blogging pleasure.
 ```sh
 uv sync
 uv run fastapi run server.py
+npm install
 ```
 
 Docker:
 
 ``sh
-docker buildx build \
-  --platform linux/amd64 \
-  --load \
-  -t lachlanmillerdev/blog .
-
+./scripts/build-and-docker.sh.
 docker run --rm -p 7777:8080 lachlanmillerdev/blog:latest
 ```
 
