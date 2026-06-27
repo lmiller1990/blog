@@ -7,6 +7,18 @@ uv sync
 uv run fastapi run server.py
 ```
 
+Docker:
+
+``sh
+docker buildx build \
+  --platform linux/arm64 \
+  --load \
+  -t blog:latest \
+  .
+
+docker run --rm -p 7777:8080 blog:latest
+```
+
 systemd:
 
 ```
