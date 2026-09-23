@@ -1,6 +1,7 @@
 __pycache__
 nohup.out
 node_modules
+.DS_Store
 
 articles/identifying-diagnostic-regions-in-viruses/**/*.json
 articles/identifying-diagnostic-regions-in-viruses/**/*.fasta
