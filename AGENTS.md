@@ -46,7 +46,7 @@ The repository ships a small Python helper (`build.py`) that converts all Markdo
 
 ```bash
 # From the project root
-python build.py
+uv run python build.py
 ```
 
 This will:

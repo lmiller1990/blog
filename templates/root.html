@@ -12,9 +12,16 @@
       }
 
       table {
-              @apply bg-red-100;
-      }
+        width: max-content;
+        max-width: calc(100vw - 2rem);
 
+        position: relative;
+        left: 50%;
+        transform: translateX(-50%);
+
+        display: block;
+        overflow-x: auto;
+      }
     </style>
   </head>
   <body class="font-sans p-4 flex justify-center leading-relaxed">

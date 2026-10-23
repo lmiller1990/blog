@@ -595,7 +595,7 @@ code, pre {
   padding: 0.25rem;
 }
 
-p > a, li > a {
+p > a, li > a, td > a, strong > a {
   cursor: pointer;
   text-decoration-line: underline;
 }
@@ -613,8 +613,16 @@ th, td {
   border-width: 2px;
 }
 
+.relative {
+  position: relative;
+}
+
 .my-6 {
   margin-top: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.mb-6 {
   margin-bottom: 1.5rem;
 }
 
@@ -668,6 +676,22 @@ th, td {
 
 .max-w-2xl {
   max-width: 42rem;
+}
+
+.grow {
+  flex-grow: 1;
+}
+
+.transform {
+  transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.list-none {
+  list-style-type: none;
 }
 
 .flex-col {
@@ -733,6 +757,10 @@ th, td {
   text-transform: uppercase;
 }
 
+.italic {
+  font-style: italic;
+}
+
 .leading-relaxed {
   line-height: 1.625;
 }
@@ -749,6 +777,11 @@ th, td {
 
 .underline {
   text-decoration-line: underline;
+}
+
+.hover\:text-gray-800:hover {
+  --tw-text-opacity: 1;
+  color: rgb(31 41 55 / var(--tw-text-opacity, 1));
 }
 
 @media (min-width: 640px) {
