@@ -1,6 +1,30 @@
 {% extends "root.html" %} {% block content %}
   <div>
-    <h2>Metronome</h2>
-    <p>Placeholder text. A metronome is coming soon.</p>
+    <h1 class="text-3xl">Pitch &amp; Pulse — Tuner &amp; Metronome</h1>
+
+    <p class="mt-4">
+      A real-time chromatic tuner and a sample-accurate metronome for violin
+      practice — watch your intonation while an audible beat keeps time.
+    </p>
+
+    <h2 class="text-lg font-bold mt-8">Support</h2>
+    <p class="mt-2">
+      Questions, bugs, or feature requests?
+      <a class="underline" href="mailto:metronome@lachlan-miller.me">metronome@lachlan-miller.me</a>.
+    </p>
+
+    <h2 class="text-lg font-bold mt-8">Getting started</h2>
+    <ul class="list-disc list-inside mt-2">
+      <li>Allow microphone access when prompted — the tuner needs it to hear your instrument.</li>
+      <li>Place the phone near your instrument and play a sustained note.</li>
+      <li>Press <strong>Start</strong> to run the metronome; use the −/+ buttons to change tempo.</li>
+      <li>Tap ⚙ to change the A4 reference (415–466 Hz) and metronome sound.</li>
+    </ul>
+
+    <h2 class="text-lg font-bold mt-8">Privacy</h2>
+    <p class="mt-2">
+      All audio is processed on-device. Nothing is collected, stored, or
+      transmitted.
+    </p>
   </div>
 {% endblock %}
