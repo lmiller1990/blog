@@ -53,6 +53,11 @@ def contact(request: Request):
     return templates.TemplateResponse(request=request, name="contact.html")
 
 
+@app.get("/metronome")
+def metronome(request: Request):
+    return templates.TemplateResponse(request=request, name="metronome.html")
+
+
 @app.get("/articles/{slug}", response_class=HTMLResponse)
 def read_article(request: Request, slug: str):
     try:
