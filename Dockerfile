@@ -2,6 +2,9 @@ FROM python:3.12-slim AS builder
 
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 
+COPY --from=builder /app/articles ./articles
+COPY --from=builder /app/musings ./musings
+
 RUN apt-get update && apt-get install -y \
     nodejs \
     npm \
