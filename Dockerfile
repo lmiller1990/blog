@@ -2,9 +2,6 @@ FROM python:3.12-slim AS builder
 
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 
-COPY --from=builder /app/articles ./articles
-COPY --from=builder /app/musings ./musings
-
 RUN apt-get update && apt-get install -y \
     nodejs \
     npm \
@@ -47,6 +44,9 @@ COPY --from=builder /app/server.py ./
 COPY --from=builder /app/build.py ./
 COPY --from=builder /app/pyproject.toml ./
 COPY --from=builder /app/uv.lock ./
+COPY --from=builder /app/articles ./articles
+COPY --from=builder /app/musings ./musings
+
 
 EXPOSE 7777
 
